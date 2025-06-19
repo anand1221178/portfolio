@@ -3,6 +3,7 @@
 .project-hero {
     padding: 8rem 0 3rem;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    min-height: auto;
 }
 
 .breadcrumb {
@@ -387,13 +388,18 @@ pre code {
 }
 
 @media (max-width: 768px) {
+    .project-hero {
+        padding: 6rem 0 2rem;
+    }
+    
     .project-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 
     .project-meta {
         flex-wrap: wrap;
         gap: 1rem;
+        font-size: 0.875rem;
     }
 
     .feature-grid {
@@ -407,6 +413,31 @@ pre code {
     .project-sidebar {
         grid-template-columns: 1fr;
     }
+    
+    .content-grid {
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .project-main {
+        max-width: 100%;
+    }
+    
+    .project-section {
+        margin-bottom: 2rem;
+    }
+    
+    .project-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .project-section h3 {
+        font-size: 1.25rem;
+    }
+    
+    pre {
+        font-size: 0.75rem;
+    }
 
     .navigation-buttons {
         flex-direction: column;
@@ -416,5 +447,13 @@ pre code {
     .navigation-buttons .btn {
         width: 100%;
         text-align: center;
+    }
+    
+    .metrics-table {
+        overflow-x: auto;
+    }
+    
+    .metrics-table table {
+        min-width: 300px;
     }
 }
