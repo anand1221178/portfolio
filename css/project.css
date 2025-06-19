@@ -59,11 +59,23 @@
 }
 
 /* Content Layout */
+.project-content {
+    padding: 0 1rem;
+}
+
 .content-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 3rem;
     margin-top: 3rem;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+    .project-content {
+        padding: 0;
+    }
 }
 
 /* Sidebar */
@@ -389,21 +401,29 @@ pre code {
 
 @media (max-width: 768px) {
     .project-hero {
-        padding: 6rem 0 2rem;
+        padding: 5rem 1rem 2rem;
     }
     
     .project-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
+        line-height: 1.3;
     }
 
     .project-meta {
-        flex-wrap: wrap;
-        gap: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
         font-size: 0.875rem;
+    }
+    
+    .breadcrumb {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
     }
 
     .feature-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .results-grid {
@@ -412,15 +432,18 @@ pre code {
 
     .project-sidebar {
         grid-template-columns: 1fr;
+        margin-bottom: 2rem;
     }
     
     .content-grid {
-        gap: 2rem;
-        margin-top: 2rem;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        padding: 0;
     }
     
     .project-main {
         max-width: 100%;
+        padding: 0;
     }
     
     .project-section {
@@ -429,31 +452,105 @@ pre code {
     
     .project-section h2 {
         font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
     
     .project-section h3 {
         font-size: 1.25rem;
+        margin: 1.5rem 0 0.75rem;
+    }
+    
+    .project-section p {
+        font-size: 1rem;
     }
     
     pre {
         font-size: 0.75rem;
+        margin: 1rem -1rem;
+        border-radius: 0;
+    }
+    
+    .feature-card {
+        padding: 1rem;
+    }
+    
+    .feature-card i {
+        font-size: 1.5rem;
+    }
+    
+    .feature-card h3 {
+        font-size: 1rem;
     }
 
     .navigation-buttons {
         flex-direction: column;
         gap: 1rem;
+        margin-top: 3rem;
     }
 
     .navigation-buttons .btn {
         width: 100%;
         text-align: center;
+        padding: 1rem;
     }
     
     .metrics-table {
+        margin: 1rem -1rem;
         overflow-x: auto;
     }
     
     .metrics-table table {
         min-width: 300px;
+        font-size: 0.875rem;
+    }
+    
+    .metrics-table th,
+    .metrics-table td {
+        padding: 0.75rem;
+    }
+    
+    .challenge-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .challenge-item h3 {
+        font-size: 1.125rem;
+    }
+    
+    .improvement-list {
+        padding-left: 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .sidebar-section {
+        padding: 1rem;
+    }
+    
+    .sidebar-section h3 {
+        font-size: 1rem;
+    }
+    
+    .tech-item {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .project-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .stat {
+        padding: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+    }
+    
+    .project-link {
+        font-size: 0.875rem;
+        padding: 0.75rem;
     }
 }
