@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anand's Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="#home">Anand</a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Hi, I'm <span class="highlight">Anand</span></h1>
+            <p class="hero-subtitle">Computer Science Honours Student | Aircraft Enthusiast | Full-Stack Developer</p>
+            <p class="hero-description">
+                Passionate about machine learning, high-performance computing, and building intelligent systems. 
+                Currently pursuing my Honours degree at Wits University with a focus on robotics and AI.
+            </p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+            </div>
+        </div>
+        <div class="hero-animation">
+            <div class="floating-element"></div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        I'm a final-year Computer Science Honours student with a deep passion for aviation and technology. 
+                        My interests span from developing fault detection systems for aircraft engines to building 
+                        GPU-accelerated ray tracers and implementing SLAM algorithms for autonomous robots.
+                    </p>
+                    <p>
+                        I love working on challenging problems that combine theoretical knowledge with practical applications, 
+                        especially in the areas of machine learning, computer vision, and high-performance computing.
+                    </p>
+                    <div class="skills">
+                        <h3>Technologies I Work With</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">C++</span>
+                            <span class="skill-tag">CUDA</span>
+                            <span class="skill-tag">Machine Learning</span>
+                            <span class="skill-tag">Computer Vision</span>
+                            <span class="skill-tag">ROS</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">AWS</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-rocket"></i>
+                        <h3>10+</h3>
+                        <p>Projects Completed</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-code"></i>
+                        <h3>5+</h3>
+                        <p>Languages</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Honours</h3>
+                        <p>CS Student</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            
+            <div class="project-categories">
+                <button class="category-btn active" data-category="all">All Projects</button>
+                <button class="category-btn" data-category="aviation">Aviation & Aircraft</button>
+                <button class="category-btn" data-category="ml">Machine Learning</button>
+                <button class="category-btn" data-category="hpc">High Performance Computing</button>
+                <button class="category-btn" data-category="robotics">Robotics</button>
+                <button class="category-btn" data-category="systems">Systems & APIs</button>
+            </div>
+
+            <div class="projects-grid">
+                <!-- Aircraft Fault Detection -->
+                <div class="project-card" data-category="aviation ml">
+                    <div class="project-image">
+                        <img src="images/aircraft-fault.jpg" alt="Aircraft Fault Detection">
+                        <div class="project-overlay">
+                            <a href="projects/aircraft-fault-detection.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Aircraft Engine Fault Detection</h3>
+                        <p>Dynamic Bayesian Network for early-stage fault detection in aircraft engines using NASA C-MAPSS dataset.</p>
+                        <div class="project-tech">
+                            <span>Python</span>
+                            <span>pgmpy</span>
+                            <span>Machine Learning</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUDA Ray Tracing -->
+                <div class="project-card" data-category="hpc">
+                    <div class="project-image">
+                        <img src="images/raytracing.jpg" alt="CUDA Ray Tracing">
+                        <div class="project-overlay">
+                            <a href="projects/cuda-raytracing.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>GPU-Accelerated Ray Tracer</h3>
+                        <p>Physically-based ray tracer with CUDA optimization, processing 14 billion rays per frame.</p>
+                        <div class="project-tech">
+                            <span>CUDA</span>
+                            <span>C++</span>
+                            <span>Computer Graphics</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLAM Project -->
+                <div class="project-card" data-category="robotics">
+                    <div class="project-image">
+                        <img src="images/slam.jpg" alt="SLAM Project">
+                        <div class="project-overlay">
+                            <a href="projects/slam-navigation.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>2D SLAM & Navigation</h3>
+                        <p>Simultaneous Localization and Mapping with A* path planning for autonomous robot navigation.</p>
+                        <div class="project-tech">
+                            <span>ROS</span>
+                            <span>Python</span>
+                            <span>Gazebo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Tracker -->
+                <div class="project-card" data-category="systems">
+                    <div class="project-image">
+                        <img src="images/investment.jpg" alt="Investment Tracker">
+                        <div class="project-overlay">
+                            <a href="projects/investment-tracker.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Investment Portfolio Tracker</h3>
+                        <p>GUI application for tracking stock investments with real-time data and performance visualization.</p>
+                        <div class="project-tech">
+                            <span>Python</span>
+                            <span>tkinter</span>
+                            <span>yfinance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parallel KNN -->
+                <div class="project-card" data-category="hpc ml">
+                    <div class="project-image">
+                        <img src="images/knn.jpg" alt="Parallel KNN">
+                        <div class="project-overlay">
+                            <a href="projects/parallel-knn.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Parallel K-Nearest Neighbors</h3>
+                        <p>OpenMP-based parallel implementation of KNN classifier with performance analysis.</p>
+                        <div class="project-tech">
+                            <span>C++</span>
+                            <span>OpenMP</span>
+                            <span>Machine Learning</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CISO Works API -->
+                <div class="project-card" data-category="systems">
+                    <div class="project-image">
+                        <img src="images/api.jpg" alt="CISO Works API">
+                        <div class="project-overlay">
+                            <a href="projects/ciso-api.html" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>CISO Works REST API</h3>
+                        <p>C++ REST API using Crow framework with PostgreSQL integration for enterprise data management.</p>
+                        <div class="project-tech">
+                            <span>C++</span>
+                            <span>Crow</span>
+                            <span>PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="more-projects">
+                <a href="projects.html" class="btn btn-secondary">View All Projects</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="contact-subtitle">
+                I'm always interested in hearing about new opportunities and exciting projects. 
+                Feel free to reach out if you'd like to collaborate or just say hello!
+            </p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:your.email@example.com">your.email@example.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+                    </div>
+                </div>
+                <a href="mailto:your.email@example.com" class="btn btn-primary">Send Message</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Anand. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/yourprofile" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:your.email@example.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
