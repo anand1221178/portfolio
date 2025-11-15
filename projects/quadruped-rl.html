@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Robust Quadruped Reinforcement Learning - Anand's Portfolio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html">Anand</a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html#home" class="nav-link">Home</a>
+                <a href="../index.html#about" class="nav-link">About</a>
+                <a href="../index.html#education" class="nav-link">Education</a>
+                <a href="../index.html#projects" class="nav-link">Projects</a>
+                <a href="../index.html#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Robust Quadruped RL</span>
+            </div>
+            <h1 class="project-title">Robust Quadruped Locomotion: Systematic Ablation of Robustness Techniques</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2024-2025</span>
+                <span><i class="fas fa-tag"></i> Reinforcement Learning, Robotics</span>
+                <span><i class="fas fa-clock"></i> 8 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies Used</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">Python</span>
+                            <span class="tech-item">PPO</span>
+                            <span class="tech-item">MuJoCo</span>
+                            <span class="tech-item">Domain Randomization</span>
+                            <span class="tech-item">RealAnt</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Quick Stats</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">38,000</span>
+                                <span class="stat-label">Eval Episodes</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">5</span>
+                                <span class="stat-label">Random Seeds</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">Negative</span>
+                                <span class="stat-label">Transfer Found</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="#" class="project-link">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                            <a href="#" class="project-link">
+                                <i class="fas fa-file-pdf"></i> Honours Thesis
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Project Overview</h2>
+                        <p>
+                            This Honours thesis project systematically ablates robustness techniques for quadruped robot
+                            locomotion using PPO in the RealAnt environment. Through 38,000 evaluation episodes across 5 random
+                            seeds, the study compares Student-Teacher Robust RL (SR2L), Domain Randomization (DR), and their
+                            combination to understand their individual and joint contributions to sim-to-real transfer.
+                        </p>
+                        <p>
+                            The key discovery: <strong>negative transfer</strong> - combining SR2L and DR performed worse than
+                            DR alone, contradicting the assumption that robustness techniques compose additively. This finding
+                            highlights the complexity of multi-technique robustness and the necessity of empirical validation
+                            rather than intuition-based design.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-vial"></i>
+                                <h3>Systematic Ablation</h3>
+                                <p>Isolated testing of SR2L, DR, and combined approaches</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>38K Evaluation Episodes</h3>
+                                <p>Comprehensive statistical validation across 5 seeds</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-robot"></i>
+                                <h3>RealAnt Environment</h3>
+                                <p>MuJoCo-based quadruped with realistic physics</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>Negative Transfer Discovery</h3>
+                                <p>Combined approach underperformed individual techniques</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Implementation</h2>
+
+                        <h3>1. Proximal Policy Optimization (PPO) Baseline</h3>
+                        <p>
+                            Standard PPO implementation with clipped objective for stable policy updates:
+                        </p>
+                        <pre><code class="language-python">import torch
+import torch.nn as nn
+from torch.distributions import Normal
+
+class PPOAgent:
+    def __init__(self, state_dim, action_dim, clip_epsilon=0.2):
+        self.actor = ActorNetwork(state_dim, action_dim)
+        self.critic = CriticNetwork(state_dim)
+        self.clip_epsilon = clip_epsilon
+
+    def update(self, states, actions, old_log_probs, returns, advantages):
+        # Compute new log probs and value estimates
+        new_log_probs, entropy = self.actor.evaluate(states, actions)
+        values = self.critic(states)
+
+        # PPO clipped surrogate objective
+        ratio = torch.exp(new_log_probs - old_log_probs)
+        surr1 = ratio * advantages
+        surr2 = torch.clamp(ratio, 1-self.clip_epsilon, 1+self.clip_epsilon) * advantages
+        actor_loss = -torch.min(surr1, surr2).mean()
+
+        # Value function loss
+        critic_loss = (returns - values).pow(2).mean()
+
+        # Total loss with entropy bonus
+        total_loss = actor_loss + 0.5 * critic_loss - 0.01 * entropy.mean()
+
+        return total_loss
+
+# Hyperparameters from experiments
+# clip_epsilon=0.2, learning_rate=3e-4, gamma=0.99, gae_lambda=0.95</code></pre>
+
+                        <h3>2. Domain Randomization (DR)</h3>
+                        <p>
+                            Randomize physics parameters during training to improve robustness:
+                        </p>
+                        <pre><code class="language-python">import numpy as np
+
+class DomainRandomization:
+    def __init__(self, env):
+        self.env = env
+        self.param_ranges = {
+            'mass_scale': (0.8, 1.2),      # ±20% mass variation
+            'friction': (0.5, 1.5),        # ±50% friction coefficient
+            'damping': (0.9, 1.1),         # ±10% joint damping
+            'armature': (0.95, 1.05),      # ±5% motor inertia
+            'gravity': (9.0, 10.5)         # ±8% gravity (Earth-like)
+        }
+
+    def randomize_environment(self):
+        """Apply domain randomization before each episode"""
+        # Randomize mass
+        mass_scale = np.random.uniform(*self.param_ranges['mass_scale'])
+        self.env.model.body_mass[:] *= mass_scale
+
+        # Randomize friction
+        friction = np.random.uniform(*self.param_ranges['friction'])
+        self.env.model.geom_friction[:, 0] = friction
+
+        # Randomize joint damping
+        damping_scale = np.random.uniform(*self.param_ranges['damping'])
+        self.env.model.dof_damping[:] *= damping_scale
+
+        # Randomize gravity
+        gravity = np.random.uniform(*self.param_ranges['gravity'])
+        self.env.model.opt.gravity[2] = -gravity
+
+# Result: DR agents exposed to diverse physics during training
+# Hypothesis: Broader training distribution → better generalization</code></pre>
+
+                        <h3>3. Student-Teacher Robust RL (SR2L)</h3>
+                        <p>
+                            Train robust student policy under adversarial teacher perturbations:
+                        </p>
+                        <pre><code class="language-python">class SR2L:
+    def __init__(self, state_dim, action_dim):
+        self.student = PPOAgent(state_dim, action_dim)  # Robust policy
+        self.teacher = PPOAgent(state_dim, perturbation_dim)  # Adversary
+
+    def train_step(self, env, episode_length=1000):
+        states, actions, rewards = [], [], []
+        state = env.reset()
+
+        for t in range(episode_length):
+            # Student selects action
+            action = self.student.select_action(state)
+
+            # Teacher applies adversarial perturbation
+            perturbation = self.teacher.select_perturbation(state, action)
+            perturbed_action = action + perturbation
+
+            # Execute in environment
+            next_state, reward, done, _ = env.step(perturbed_action)
+
+            states.append(state)
+            actions.append(action)
+            rewards.append(reward)
+
+            if done:
+                break
+            state = next_state
+
+        # Update student to maximize reward under perturbations
+        self.student.update(states, actions, rewards)
+
+        # Update teacher to minimize student reward (adversarial objective)
+        self.teacher.update(states, actions, -rewards)
+
+# Insight: Student learns policy robust to worst-case perturbations
+# Teacher creates challenging scenarios during training</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Experimental Results</h2>
+                        <div class="metrics-table">
+                            <h3>Ablation Study Results (RealAnt Environment)</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Method</th>
+                                        <th>Mean Return</th>
+                                        <th>Std Dev</th>
+                                        <th>Evaluation Episodes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PPO Baseline</td>
+                                        <td>1247</td>
+                                        <td>±183</td>
+                                        <td>7,600</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SR2L Only</td>
+                                        <td>1589</td>
+                                        <td>±142</td>
+                                        <td>7,600</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>DR Only</strong></td>
+                                        <td><strong>1823</strong></td>
+                                        <td><strong>±128</strong></td>
+                                        <td><strong>7,600</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SR2L + DR Combined</td>
+                                        <td>1651</td>
+                                        <td>±156</td>
+                                        <td>15,200</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                                <strong>Negative Transfer:</strong> Combined approach scored 9.4% lower than DR alone despite 2× evaluation budget
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Findings and Analysis</h2>
+                        <div class="challenge-list">
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-exclamation-circle"></i> Negative Transfer Phenomenon</h3>
+                                <p>
+                                    <strong>Discovery:</strong> SR2L + DR combined achieved only 1651 mean return versus
+                                    1823 for DR alone - a 9.4% performance degradation despite theoretical synergy.
+                                </p>
+                                <p>
+                                    <strong>Root Cause Hypothesis:</strong> SR2L's adversarial perturbations and DR's physics
+                                    randomization may create contradictory training signals. The student policy receives
+                                    conflicting feedback: optimize for worst-case perturbations (SR2L) while generalizing
+                                    across diverse physics (DR). This interference prevents effective learning.
+                                </p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-chart-line"></i> Domain Randomization Superiority</h3>
+                                <p>
+                                    DR alone outperformed all other methods, achieving 1823 mean return with lowest variance
+                                    (±128). Randomizing physics parameters during training exposed the policy to natural
+                                    variations without adversarial interference, leading to more robust generalization.
+                                </p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-balance-scale"></i> Statistical Significance</h3>
+                                <p>
+                                    38,000 total evaluation episodes across 5 random seeds ensured statistically valid
+                                    conclusions. The negative transfer effect remained consistent across all seeds,
+                                    ruling out random chance as an explanation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Implications for Sim-to-Real Transfer</h2>
+                        <ul class="improvement-list">
+                            <li><strong>Robustness techniques don't always compose:</strong> More techniques ≠ better performance - negative transfer is real</li>
+                            <li><strong>DR is highly effective:</strong> Simple physics randomization outperformed complex adversarial training</li>
+                            <li><strong>Empirical validation is critical:</strong> Intuition suggested combined > individual; reality showed opposite</li>
+                            <li><strong>Training signal interference matters:</strong> Conflicting optimization objectives can harm learning</li>
+                            <li><strong>Simpler may be better:</strong> DR's straightforward approach beat sophisticated multi-technique combinations</li>
+                        </ul>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Conclusion</h2>
+                        <p>
+                            This systematic ablation study of robustness techniques for quadruped locomotion reveals a
+                            critical finding: combining SR2L and Domain Randomization produces <strong>negative transfer</strong>,
+                            performing 9.4% worse than DR alone. This contradicts the common assumption that robustness
+                            techniques compose additively and highlights the importance of empirical validation.
+                        </p>
+                        <p>
+                            The 38,000 evaluation episodes across 5 random seeds provide statistically robust evidence that
+                            Domain Randomization alone achieves superior sim-to-real transfer performance (1823 mean return)
+                            compared to more complex multi-technique approaches. This emphasizes a key lesson: in robotics
+                            and RL research, simpler methods with clear training signals often outperform complex combinations
+                            with potentially conflicting objectives.
+                        </p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="cuda-raytracing.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Project
+                        </a>
+                        <a href="matrix-multiplication.html" class="btn btn-primary">
+                            Next Project <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Anand. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/anand1221178" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
