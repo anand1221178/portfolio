@@ -58,8 +58,8 @@
                         <div class="tech-stack">
                             <span class="tech-item">C++</span>
                             <span class="tech-item">OpenMP</span>
-                            <span class="tech-item">Machine Learning</span>
-                            <span class="tech-item">Parallel Computing</span>
+                            <span class="tech-item">MPI</span>
+                            <span class="tech-item">Federated Learning</span>
                         </div>
                     </div>
                     <div class="sidebar-section">
@@ -67,26 +67,26 @@
                         <div class="project-stats">
                             <div class="stat">
                                 <span class="stat-value">17.27x</span>
-                                <span class="stat-label">Speedup (128 threads)</span>
+                                <span class="stat-label">Speedup</span>
                             </div>
                             <div class="stat">
                                 <span class="stat-value">81.97%</span>
-                                <span class="stat-label">Fed. Learning Acc</span>
+                                <span class="stat-label">FL Accuracy</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">OpenMP+MPI</span>
-                                <span class="stat-label">Hybrid Parallel</span>
+                                <span class="stat-value">2.14x</span>
+                                <span class="stat-label">vs Centralized</span>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-section">
                         <h3>Links</h3>
                         <div class="project-links">
-                            <a href="#" class="project-link">
+                            <a href="https://github.com/anand1221178/hpc-knn-federated" class="project-link" target="_blank">
                                 <i class="fab fa-github"></i> View on GitHub
                             </a>
-                            <a href="#" class="project-link">
-                                <i class="fas fa-chart-bar"></i> Performance Analysis
+                            <a href="parallel-knn-report.pdf" class="project-link" target="_blank">
+                                <i class="fas fa-file-pdf"></i> Performance Analysis
                             </a>
                         </div>
                     </div>
@@ -96,16 +96,16 @@
                     <div class="project-overview">
                         <h2>Project Overview</h2>
                         <p>
-                            This project implements parallel KNN classification using OpenMP and compares centralized
-                            vs federated learning approaches using MPI for distributed training. The parallel KNN
-                            implementation achieves 17.27× speedup with 128 threads through optimized distance calculations
-                            and neighbor search algorithms.
+                            This project explores parallel and distributed machine learning by implementing a K-Nearest Neighbors (KNN)
+                            classifier with OpenMP and comparing centralized vs. federated learning approaches with MPI. The parallel
+                            KNN implementation achieves a 17.27× speedup on 128 threads by optimizing the distance calculation and
+                            neighbor search algorithms.
                         </p>
                         <p>
-                            The federated learning component demonstrates superior performance on heterogeneous data
-                            distributions, achieving 81.97% accuracy compared to 38.25% for centralized training on
-                            non-IID partitions. This highlights the importance of data locality in distributed machine
-                            learning systems.
+                            The federated learning component demonstrates superior performance on heterogeneous data distributions,
+                            achieving 81.97% accuracy compared to just 38.25% for a centralized training approach on the same
+                            non-IID data. This highlights the critical importance of data locality in real-world distributed
+                            machine learning systems.
                         </p>
                     </div>
 
@@ -115,22 +115,22 @@
                             <div class="feature-card">
                                 <i class="fas fa-project-diagram"></i>
                                 <h3>OpenMP Parallelization</h3>
-                                <p>17.27× speedup with 128 threads using sections and tasks work-sharing</p>
+                                <p>Achieved a 17.27× speedup on 128 threads using OpenMP sections for work-sharing.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-network-wired"></i>
                                 <h3>Federated Learning</h3>
-                                <p>MPI-based distributed training with federated averaging</p>
+                                <p>Implemented a federated averaging algorithm with MPI for distributed training.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-database"></i>
                                 <h3>Non-IID Data Handling</h3>
-                                <p>Superior performance on heterogeneous data distributions</p>
+                                <p>Showcased federated learning's superior performance on heterogeneous data distributions.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-chart-line"></i>
                                 <h3>Hybrid Parallelism</h3>
-                                <p>Combined OpenMP+MPI for multi-level parallelization</p>
+                                <p>Combined OpenMP and MPI for a multi-level parallelization strategy.</p>
                             </div>
                         </div>
                     </div>
@@ -138,129 +138,59 @@
                     <div class="project-section">
                         <h2>Technical Implementation</h2>
 
-                        <h3>1. OpenMP Parallelization Strategies</h3>
+                        <h3>1. OpenMP Parallelization of KNN</h3>
                         <p>
-                            Compared three OpenMP work-sharing approaches - sections outperformed tasks and for loops:
+                            The KNN algorithm was parallelized using OpenMP. The "sections" work-sharing construct provided the best performance due to the coarse-grained nature of the KNN pipeline.
                         </p>
-                        <pre><code class="language-cpp">#include <omp.h>
-#include <vector>
-
-// Best performing: sections work-sharing (17.27x speedup at 128 threads)
+                        <pre><code class="language-cpp">// From knn.cpp
 void knn_classify_sections(const Dataset& data, int k, int num_threads) {
     #pragma omp parallel sections num_threads(num_threads)
     {
         #pragma omp section
         {
-            // Distance calculation for subset 1
-            compute_distances_euclidean(data, subset1);
+            // Compute distances for a subset of the data
         }
         #pragma omp section
         {
-            // Distance calculation for subset 2
-            compute_distances_euclidean(data, subset2);
+            // Find k-nearest neighbors for another subset
         }
-        #pragma omp section
-        {
-            // K-smallest selection
-            find_k_nearest_neighbors(distances, k);
-        }
-        #pragma omp section
-        {
-            // Majority voting
-            classify_by_voting(nearest_neighbors);
-        }
+        // ... and so on
     }
-}
-
-// Sections outperformed tasks due to lower scheduling overhead
-// for coarse-grained parallel regions in KNN workflow</code></pre>
+}</code></pre>
 
                         <h3>2. Federated Learning with MPI</h3>
                         <p>
-                            Distributed training using federated averaging outperformed centralized approaches on non-IID data:
+                            A federated learning system was implemented using MPI to simulate a distributed training scenario. The federated averaging algorithm was used to aggregate model weights from multiple workers.
                         </p>
-                        <pre><code class="language-cpp">#include <mpi.h>
-
-// Federated averaging: 81.97% accuracy vs 38.25% centralized on non-IID data
-void federated_learning_mpi(Dataset& local_data, int num_rounds, int rank, int size) {
-    Model local_model;
-
+                        <pre><code class="language-cpp">// From the federated learning implementation
+void federated_learning_mpi(...) {
     for (int round = 0; round < num_rounds; round++) {
-        // Each worker trains on local non-IID partition
-        local_model.train(local_data, epochs=1);
+        // Train local model on local data
+        local_model.train(local_data);
 
-        // Get local model weights
-        std::vector<float> local_weights = local_model.get_weights();
-        std::vector<float> global_weights(local_weights.size());
-
-        // Federated averaging: aggregate weights across all workers
+        // Aggregate model weights using MPI_Allreduce
         MPI_Allreduce(
-            local_weights.data(),
+            local_model.get_weights().data(),
             global_weights.data(),
-            local_weights.size(),
-            MPI_FLOAT,
-            MPI_SUM,
-            MPI_COMM_WORLD
+            // ...
         );
 
-        // Average by number of workers
-        for (auto& w : global_weights) {
-            w /= size;
-        }
-
-        // Update local model with global weights
+        // Update local model with averaged global weights
         local_model.set_weights(global_weights);
     }
-}
-
-// Key insight: Federated learning preserves data locality, crucial for
-// heterogeneous (non-IID) distributions common in real-world scenarios</code></pre>
-
-                        <h3>3. Performance Comparison: Centralized vs Federated</h3>
-                        <p>
-                            On heterogeneous (non-IID) MNIST data, federated learning dramatically outperformed centralized:
-                        </p>
-                        <div class="metrics-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Approach</th>
-                                        <th>Accuracy</th>
-                                        <th>Notes</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Federated Learning (MPI)</strong></td>
-                                        <td><strong>81.97%</strong></td>
-                                        <td>4 workers, non-IID partitions</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Centralized Training</td>
-                                        <td>38.25%</td>
-                                        <td>Same data, pooled centrally</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p style="margin-top: 1rem;">
-                            <strong>Key Finding:</strong> When data is heterogeneously distributed (non-IID), federated
-                            learning's local training + global aggregation preserves data characteristics better than
-                            naive centralized pooling, resulting in 2.14× better accuracy.
-                        </p>
+}</code></pre>
                     </div>
 
                     <div class="project-section">
                         <h2>Performance Analysis</h2>
                         <div class="metrics-table">
-                            <h3>OpenMP KNN Scalability (MNIST Dataset)</h3>
+                            <h3>OpenMP KNN Scalability</h3>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Threads</th>
-                                        <th>Time (seconds)</th>
+                                        <th>Time (s)</th>
                                         <th>Speedup</th>
-                                        <th>Work-Sharing</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -268,33 +198,11 @@ void federated_learning_mpi(Dataset& local_data, int num_rounds, int rank, int s
                                         <td>1</td>
                                         <td>89.32</td>
                                         <td>1.0x</td>
-                                        <td>Baseline (sequential)</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>52.47</td>
-                                        <td>1.70x</td>
-                                        <td rowspan="7">Sections (best)</td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>28.19</td>
-                                        <td>3.17x</td>
-                                    </tr>
-                                    <tr>
-                                        <td>8</td>
-                                        <td>15.84</td>
-                                        <td>5.64x</td>
                                     </tr>
                                     <tr>
                                         <td>16</td>
                                         <td>9.12</td>
                                         <td>9.79x</td>
-                                    </tr>
-                                    <tr>
-                                        <td>32</td>
-                                        <td>6.45</td>
-                                        <td>13.85x</td>
                                     </tr>
                                     <tr>
                                         <td>64</td>
@@ -308,76 +216,47 @@ void federated_learning_mpi(Dataset& local_data, int num_rounds, int rank, int s
                                     </tr>
                                 </tbody>
                             </table>
-                            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                                Sections work-sharing outperformed tasks due to lower scheduling overhead for coarse-grained parallelism
-                            </p>
                         </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Key Findings and Insights</h2>
-                        <div class="challenge-list">
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-bolt"></i> OpenMP Work-Sharing Comparison</h3>
-                                <p>
-                                    <strong>Sections (17.27×) > Tasks (14.52×) > For loops (11.83×)</strong><br>
-                                    Sections won due to lower scheduling overhead for coarse-grained parallel regions.
-                                    Tasks incurred higher runtime overhead from dynamic task creation, while for loops
-                                    had load imbalance issues in the KNN classification pipeline.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-network-wired"></i> Federated Learning Advantage</h3>
-                                <p>
-                                    <strong>81.97% (Federated) vs 38.25% (Centralized) on non-IID MNIST</strong><br>
-                                    Centralized training on heterogeneous data pools mismatched distributions, causing
-                                    catastrophic accuracy loss. Federated learning preserved local data characteristics
-                                    through distributed training + global aggregation, achieving 2.14× better accuracy.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-project-diagram"></i> Scalability Saturation</h3>
-                                <p>
-                                    Speedup saturated at 128 threads (17.27×) due to Amdahl's Law - sequential portions
-                                    (k-nearest selection, voting) became bottleneck. Diminishing returns beyond 64 threads
-                                    suggest optimal configuration for MNIST-scale KNN workloads.
-                                </p>
-                            </div>
+                        <div class="metrics-table" style="margin-top: 2rem;">
+                            <h3>Centralized vs. Federated Learning on Non-IID Data</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Approach</th>
+                                        <th>Accuracy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Federated Learning (MPI)</strong></td>
+                                        <td><strong>81.97%</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Centralized Training</td>
+                                        <td>38.25%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Technical Contributions</h2>
-                        <ul class="improvement-list">
-                            <li><strong>17.27× OpenMP speedup:</strong> Sections work-sharing outperformed tasks and for loops</li>
-                            <li><strong>Federated learning wins on non-IID data:</strong> 81.97% vs 38.25% centralized accuracy</li>
-                            <li><strong>MPI Allreduce for weight aggregation:</strong> Efficient federated averaging across workers</li>
-                            <li><strong>Hybrid OpenMP+MPI parallelism:</strong> Multi-level parallelization for distributed KNN</li>
-                            <li><strong>Scalability analysis:</strong> Identified Amdahl's Law bottleneck at 128 threads</li>
-                        </ul>
                     </div>
 
                     <div class="project-section">
                         <h2>Conclusion</h2>
                         <p>
-                            This project achieved 17.27× parallel speedup for KNN classification using OpenMP sections
-                            work-sharing and demonstrated that federated learning outperforms centralized training on
-                            non-IID data (81.97% vs 38.25% accuracy). The comparison of OpenMP strategies (sections, tasks,
-                            for loops) revealed that coarse-grained parallelism minimizes scheduling overhead.
-                        </p>
-                        <p>
-                            The federated learning component using MPI highlights the critical importance of preserving
-                            data locality in distributed systems. When data is heterogeneously distributed, local training
-                            with global aggregation significantly outperforms naive centralized pooling - a key insight for
-                            real-world distributed machine learning applications.
+                            This project successfully demonstrates the application of parallel and distributed computing techniques
+                            to machine learning algorithms. The parallel KNN implementation achieved a significant 17.27x speedup
+                            with OpenMP. Furthermore, the federated learning component highlighted the robustness of distributed
+                            learning on non-IID data, outperforming a centralized approach by a factor of 2.14x. These results
+                            underscore the importance of choosing the right parallelization strategy and data distribution model
+                            for real-world machine learning applications.
                         </p>
                     </div>
 
                     <div class="navigation-buttons">
-                        <a href="investment-tracker.html" class="btn btn-secondary">
+                        <a href="matrix-multiplication.html" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Previous Project
                         </a>
-                        <a href="ciso-api.html" class="btn btn-primary">
+                        <a href="bst-os-tree.html" class="btn btn-primary">
                             Next Project <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>

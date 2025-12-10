@@ -62,6 +62,8 @@
                             <span class="tech-item">numpy</span>
                             <span class="tech-item">scikit-learn</span>
                             <span class="tech-item">matplotlib</span>
+                            <span class="tech-item">DBN</span>
+                            <span class="tech-item">MRF</span>
                         </div>
                     </div>
                     <div class="sidebar-section">
@@ -76,18 +78,18 @@
                                 <span class="stat-label">Macro F1</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">1800</span>
-                                <span class="stat-label">Timesteps</span>
+                                <span class="stat-value">5</span>
+                                <span class="stat-label">Scenarios</span>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-section">
                         <h3>Links</h3>
                         <div class="project-links">
-                            <a href="#" class="project-link">
+                            <a href="https://github.com/anand1221178/AirCraft-Fault-Detection" class="project-link" target="_blank">
                                 <i class="fab fa-github"></i> View on GitHub
                             </a>
-                            <a href="#" class="project-link">
+                            <a href="aircraft-fault-detection-report.pdf" class="project-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Read Paper
                             </a>
                         </div>
@@ -99,15 +101,10 @@
                         <h2>Project Overview</h2>
                         <p>
                             This project implements a fault detection system for aircraft engines using
-                            Dynamic Bayesian Networks (DBN) integrated with Markov Random Fields (MRF). The system
-                            analyzes multivariate sensor data from simulated aircraft engine scenarios inspired by
-                            NASA's C-MAPSS framework, achieving 85.1% accuracy in fault classification.
-                        </p>
-                        <p>
-                            The challenge was to distinguish between actual mechanical degradation (Oil Leak, Bearing Wear)
-                            and sensor failures (EGT Sensor Failure, Vibration Sensor Failure) while dealing with highly
-                            noisy vibration data typical in aircraft engines. The solution employs probabilistic graphical
-                            models with MRF smoothing to capture temporal dependencies and reduce false positives by 15%.
+                            a Dynamic Bayesian Network (DBN) integrated with a Markov Random Field (MRF). The system
+                            analyzes multivariate sensor data from simulated aircraft engine scenarios to distinguish between
+                            actual mechanical degradation and sensor failures. The solution achieves 85.1% accuracy in fault classification
+                            by modeling temporal dependencies and smoothing noisy sensor data.
                         </p>
                     </div>
 
@@ -117,22 +114,22 @@
                             <div class="feature-card">
                                 <i class="fas fa-brain"></i>
                                 <h3>Dynamic Bayesian Network</h3>
-                                <p>Models temporal transitions of engine health using multivariate sensor emissions</p>
+                                <p>Models temporal transitions of engine subsystem health and sensor observations.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-filter"></i>
                                 <h3>MRF Smoothing</h3>
-                                <p>Improves robustness to vibration noise by enforcing temporal consistency</p>
+                                <p>Improves robustness to inconsistent vibration readings from colocated sensors.</p>
                             </div>
                             <div class="feature-card">
-                                <i class="fas fa-chart-bar"></i>
-                                <h3>Sensor Binning Strategy</h3>
-                                <p>Includes quantile, k-means, and uniform schemes across 9 selected sensors</p>
+                                <i class="fas fa-robot"></i>
+                                <h3>Sensor Health Modeling</h3>
+                                <p>Enables robustness to sensor drift and failure, a critical aspect of real-world scenarios.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-cogs"></i>
-                                <h3>Threshold Optimization</h3>
-                                <p>Grid search for accuracy-tuned, macro-F1-tuned, and fixed threshold baselines</p>
+                                <h3>Simulated Scenarios</h3>
+                                <p>Evaluated on five realistic operational scenarios, including normal operation, oil leaks, bearing wear, and sensor failures.</p>
                             </div>
                         </div>
                     </div>
@@ -140,39 +137,45 @@
                     <div class="project-section">
                         <h2>Technical Implementation</h2>
                         <p>
-                            The implementation consists of several key components working together to achieve 
-                            accurate fault detection:
+                            The core of the project is the DBN, which captures temporal dependencies, and the MRF, which smooths inconsistent vibration readings.
+                            The system is designed to be robust to sensor drift and failure.
                         </p>
                         
                         <h3>1. Simulated Scenario Generation</h3>
                         <p>
-                            The system simulates 5 distinct aircraft engine scenarios over 1800 timesteps:
+                            The system was tested on five realistic operational scenarios over 1800 timesteps:
                         </p>
                         <ul class="improvement-list">
-                            <li><strong>Normal Operation:</strong> Baseline healthy engine behavior</li>
-                            <li><strong>Oil Leak:</strong> Progressive oil pressure drop with compensation</li>
-                            <li><strong>Bearing Wear:</strong> Increasing vibration amplitude over time</li>
-                            <li><strong>EGT Sensor Failure:</strong> Fixed bias in exhaust gas temperature readings</li>
-                            <li><strong>Vibration Sensor Failure:</strong> Random noise spike patterns</li>
+                            <li><strong>Normal Operation:</strong> Baseline for a healthy engine.</li>
+                            <li><strong>Oil Leak:</strong> Simulates a progressive drop in oil pressure.</li>
+                            <li><strong>Bearing Wear:</strong> Models increasing vibration amplitude over time.</li>
+                            <li><strong>EGT Sensor Failure:</strong> Introduces a fixed bias in exhaust gas temperature readings.</li>
+                            <li><strong>Vibration Sensor Failure:</strong> Simulates random noise spikes in vibration sensors.</li>
                         </ul>
-                        <pre><code class="language-python"># Sensor binning strategy for DBN discretization
-def discretize_sensor_data(data, method='quantile', n_bins=5):
+                        <pre><code class="language-python"># From run_experiment.py: Main pipeline
+def run_full_pipeline():
     """
-    Discretize continuous sensor readings into categorical bins
+    Main pipeline: sim → DBN → classify
+    """
+    # 1. Generate data for all 5 scenarios
+    simulated_data = generate_all_scenarios()
 
-    Args:
-        data: Sensor readings (numpy array)
-        method: 'quantile', 'kmeans', or 'uniform'
-        n_bins: Number of discrete bins (5 used in final model)
-    """
-    if method == 'quantile':
-        bins = np.percentile(data, np.linspace(0, 100, n_bins+1))
-        return np.digitize(data, bins[1:-1])
-    # Quantile binning performed best in experiments</code></pre>
+    # 2. Pre-process and smooth vibration data with MRF
+    smoothed_data = preprocess_with_mrf(simulated_data)
+
+    # 3. Discretize sensor data for DBN
+    discretized_data = discretize(smoothed_data)
+
+    # 4. Perform inference with the DBN
+    predictions = dbn_inference(discretized_data)
+
+    # 5. Evaluate the results
+    evaluate_predictions(predictions)
+</code></pre>
 
                         <h3>2. DBN Model Architecture</h3>
                         <p>
-                            The Dynamic Bayesian Network captures the temporal evolution of engine health states:
+                            The DBN captures the temporal evolution of engine health states. The model was built using the `pgmpy` library.
                         </p>
                         <div class="architecture-diagram">
                             <img src="../images/dbn-architecture.png" alt="DBN Architecture">
@@ -180,27 +183,16 @@ def discretize_sensor_data(data, method='quantile', n_bins=5):
 
                         <h3>3. MRF Smoothing for Vibration Channels</h3>
                         <p>
-                            To handle the inherent noise in vibration sensors, Markov Random Field smoothing
-                            enforces temporal consistency, reducing false positives by 15%:
+                            To handle the inherent noise in vibration sensors, a Markov Random Field (MRF) was used to smooth inconsistent readings from colocated sensors (Vib1/Vib2).
                         </p>
-                        <pre><code class="language-python"># MRF smoothing implementation
-def apply_mrf_smoothing(predictions, lambda_mrf=0.7):
+                        <pre><code class="language-python"># From PreProcessing/mrf.py
+def smooth_vibrations(vib1_data, vib2_data, lambda_mrf=0.7):
     """
-    Apply MRF smoothing to enforce temporal consistency
-    Reduced false positives by 15% in vibration channels
-
-    Args:
-        predictions: Raw DBN state predictions
-        lambda_mrf: Smoothing strength (0.7 optimal)
+    Smooths colocated vibration sensors using an MRF.
     """
-    smoothed = predictions.copy()
-    for t in range(1, len(predictions)):
-        # Penalize abrupt state transitions
-        if predictions[t] != predictions[t-1]:
-            # Apply temporal consistency constraint
-            smoothed[t] = lambda_mrf * predictions[t] + \
-                         (1 - lambda_mrf) * smoothed[t-1]
-    return smoothed</code></pre>
+    # ... implementation of MRF smoothing ...
+    return smoothed_vib_data
+</code></pre>
                     </div>
 
                     <div class="project-section">
@@ -209,12 +201,12 @@ def apply_mrf_smoothing(predictions, lambda_mrf=0.7):
                             <div class="result-card">
                                 <h3>Confusion Matrix</h3>
                                 <img src="../images/confusion-matrix.png" alt="Confusion Matrix">
-                                <p>Final confusion matrix showing classification performance across all health states</p>
+                                <p>The confusion matrix shows excellent performance in distinguishing 'Normal' from 'Fault' states, with some confusion between specific fault types.</p>
                             </div>
                             <div class="result-card">
                                 <h3>Learning Curves</h3>
                                 <img src="../images/learning-curves.png" alt="Learning Curves">
-                                <p>10-fold cross-validation results demonstrating model stability</p>
+                                <p>Learning curves from 10-fold cross-validation demonstrate model stability and generalization.</p>
                             </div>
                         </div>
 
@@ -274,24 +266,19 @@ def apply_mrf_smoothing(predictions, lambda_mrf=0.7):
                             <div class="challenge-item">
                                 <h3><i class="fas fa-exclamation-circle"></i> Vibration Noise</h3>
                                 <p>
-                                    <strong>Challenge:</strong> High levels of noise in vibration sensor readings made
-                                    it difficult to distinguish between normal variations and actual bearing wear faults.
+                                    <strong>Challenge:</strong> High levels of noise in vibration sensor readings made it difficult to distinguish between normal variations and actual bearing wear faults.
                                 </p>
                                 <p>
-                                    <strong>Solution:</strong> Implemented MRF smoothing with λ=0.7 to enforce temporal
-                                    consistency, reducing false positives by 15% while maintaining detection sensitivity.
+                                    <strong>Solution:</strong> Implemented MRF smoothing to enforce temporal consistency, reducing false positives by 15% while maintaining detection sensitivity.
                                 </p>
                             </div>
                             <div class="challenge-item">
                                 <h3><i class="fas fa-exclamation-circle"></i> Sensor vs Mechanical Faults</h3>
                                 <p>
-                                    <strong>Challenge:</strong> Distinguishing between actual mechanical degradation
-                                    (oil leak, bearing wear) and sensor failures that mimic fault signatures.
+                                    <strong>Challenge:</strong> Distinguishing between actual mechanical degradation and sensor failures that mimic fault signatures.
                                 </p>
                                 <p>
-                                    <strong>Solution:</strong> Designed DBN structure to model sensor consistency across
-                                    related channels (e.g., oil pressure affects temperature), achieving 85.1% accuracy
-                                    across all 5 scenarios.
+                                    <strong>Solution:</strong> The DBN was structured to model sensor health, allowing it to differentiate between true faults and sensor malfunctions. This resulted in an 85.1% accuracy across all 5 scenarios.
                                 </p>
                             </div>
                         </div>
@@ -300,11 +287,10 @@ def apply_mrf_smoothing(predictions, lambda_mrf=0.7):
                     <div class="project-section">
                         <h2>Key Insights</h2>
                         <ul class="improvement-list">
-                            <li>Quantile binning (5 bins) outperformed k-means and uniform discretization strategies</li>
-                            <li>MRF smoothing with λ=0.7 optimal for vibration channels (15% false positive reduction)</li>
-                            <li>Accuracy-tuned threshold outperformed macro-F1 tuned threshold by 3.2%</li>
-                            <li>DBN temporal modeling captured progressive degradation in oil leak and bearing wear</li>
-                            <li>9-sensor subset (selected via correlation analysis) matched full sensor performance</li>
+                            <li>Quantile binning (5 bins) outperformed k-means and uniform discretization.</li>
+                            <li>MRF smoothing with λ=0.7 was optimal for vibration channels, reducing false positives by 15%.</li>
+                            <li>The DBN's temporal modeling successfully captured progressive degradation in oil leaks and bearing wear.</li>
+                            <li>A 9-sensor subset, selected via correlation analysis, matched the performance of the full sensor suite.</li>
                         </ul>
                     </div>
 
@@ -313,13 +299,9 @@ def apply_mrf_smoothing(predictions, lambda_mrf=0.7):
                         <p>
                             This project demonstrates the effectiveness of probabilistic graphical models in
                             handling complex, noisy sensor data for fault detection. The combination
-                            of Dynamic Bayesian Networks with MRF smoothing achieved 85.1% accuracy across 5
+                            of a Dynamic Bayesian Network with MRF smoothing achieved 85.1% accuracy across 5
                             simulated scenarios, successfully distinguishing mechanical faults from sensor failures.
-                        </p>
-                        <p>
-                            The macro-F1 score of 0.796 shows balanced performance across all scenarios, with
-                            MRF smoothing reducing false positives by 15% in noisy vibration channels. The system's
-                            ability to model temporal dependencies makes it well-suited for real-time fault detection
+                            The system's ability to model temporal dependencies makes it well-suited for real-time fault detection
                             in safety-critical applications.
                         </p>
                     </div>

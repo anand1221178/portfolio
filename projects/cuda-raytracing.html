@@ -56,10 +56,9 @@
                     <div class="sidebar-section">
                         <h3>Technologies Used</h3>
                         <div class="tech-stack">
-                            <span class="tech-item">CUDA</span>
                             <span class="tech-item">C++</span>
-                            <span class="tech-item">Computer Graphics</span>
-                            <span class="tech-item">Parallel Computing</span>
+                            <span class="tech-item">CUDA</span>
+                            <span class="tech-item">Physically-Based Rendering</span>
                             <span class="tech-item">GPU Programming</span>
                         </div>
                     </div>
@@ -76,17 +75,17 @@
                             </div>
                             <div class="stat">
                                 <span class="stat-value">1080p</span>
-                                <span class="stat-label">300 samples</span>
+                                <span class="stat-label">Resolution</span>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-section">
                         <h3>Links</h3>
                         <div class="project-links">
-                            <a href="#" class="project-link">
+                            <a href="https://github.com/anand1221178/Cuda-Raytracing" class="project-link" target="_blank">
                                 <i class="fab fa-github"></i> View on GitHub
                             </a>
-                            <a href="#" class="project-link">
+                            <a href="cuda-raytracing-report.pdf" class="project-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Technical Report
                             </a>
                         </div>
@@ -97,15 +96,15 @@
                     <div class="project-overview">
                         <h2>Project Overview</h2>
                         <p>
-                            This project implements a GPU-accelerated ray tracer using NVIDIA CUDA, achieving peak performance
-                            of 187.4 million rays per second. The system processes 14 billion rays to render a 1080p image
-                            with 300 samples per pixel, demonstrating the effectiveness of GPU parallelism for graphics workloads.
+                            This project implements a GPU-accelerated ray tracer using NVIDIA CUDA, achieving a peak performance
+                            of 187.4 million rays per second. The system renders a 1080p image with 300 samples per pixel by tracing
+                            14 billion rays, demonstrating the massive parallelism of GPUs for graphics workloads.
                         </p>
                         <p>
-                            The project focuses on memory hierarchy optimization through systematic comparison of global, constant,
-                            and texture memory configurations. Surprisingly, global memory outperformed constant memory by 29%,
-                            revealing that the workload is memory latency-bound rather than bandwidth-bound - a critical insight
-                            for GPU optimization.
+                            A key focus of the project was memory hierarchy optimization. Through a systematic comparison of global,
+                            constant, and texture memory, it was found that global memory outperformed constant memory by 29%.
+                            This surprising result revealed that the workload is memory latency-bound rather than bandwidth-bound,
+                            a critical insight for GPU optimization.
                         </p>
                     </div>
 
@@ -115,22 +114,22 @@
                             <div class="feature-card">
                                 <i class="fas fa-microchip"></i>
                                 <h3>CUDA Kernel Optimization</h3>
-                                <p>Highly optimized kernels with memory coalescing and minimal divergence</p>
+                                <p>Highly optimized kernels designed for maximum parallelism and memory throughput.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-bolt"></i>
-                                <h3>Real-time Performance</h3>
-                                <p>Achieves 60 FPS for complex scenes through parallel ray processing</p>
+                                <h3>High Performance</h3>
+                                <p>Achieves 187.4 million rays per second through efficient GPU utilization.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-sun"></i>
                                 <h3>Physically-Based Rendering</h3>
-                                <p>Accurate light transport simulation with global illumination</p>
+                                <p>Accurate light transport simulation for realistic image generation.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-layer-group"></i>
                                 <h3>BVH Acceleration</h3>
-                                <p>Bounding Volume Hierarchy for efficient ray-scene intersection</p>
+                                <p>Bounding Volume Hierarchy for efficient ray-scene intersection, enabling complex scenes.</p>
                             </div>
                         </div>
                     </div>
@@ -140,82 +139,42 @@
 
                         <h3>1. Parallel Ray Generation</h3>
                         <p>
-                            Each pixel in the output image is processed by a separate CUDA thread, generating and tracing
-                            multiple rays for anti-aliasing and Monte Carlo sampling:
+                            Each pixel in the output image is processed by a separate CUDA thread, which generates and traces
+                            multiple rays for anti-aliasing and Monte Carlo sampling. This embarrassingly parallel approach
+                            is a perfect fit for the GPU's architecture.
                         </p>
-                        <pre><code class="language-cpp">__global__ void raytraceKernel(Ray* rays, Color* framebuffer,
-                              Scene* scene, int width, int height) {
+                        <pre><code class="language-cpp">// From cuda_kernels.cu
+__global__ void raytrace_kernel(...) {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= width || y >= height) return;
 
-    int pixelIndex = y * width + x;
-    Color pixelColor = {0, 0, 0};
-
-    // Multiple samples per pixel for anti-aliasing
-    for (int s = 0; s < SAMPLES_PER_PIXEL; s++) {
-        Ray ray = generateRay(x, y, width, height);
-        pixelColor += traceRay(ray, scene, 0);
-    }
-
-    framebuffer[pixelIndex] = pixelColor / SAMPLES_PER_PIXEL;
+    // ... ray generation and tracing logic ...
 }</code></pre>
 
                         <h3>2. BVH Construction and Traversal</h3>
                         <p>
-                            Implemented a GPU-friendly Bounding Volume Hierarchy using the Surface Area Heuristic (SAH)
-                            for optimal splitting. The BVH dramatically reduces the number of ray-primitive intersection tests:
+                            A Bounding Volume Hierarchy (BVH) is constructed on the CPU and transferred to the GPU to accelerate
+                            ray-scene intersections. The BVH traversal is performed in the CUDA kernel, dramatically reducing
+                            the number of ray-primitive intersection tests.
                         </p>
-                        <pre><code class="language-cpp">__device__ bool intersectBVH(const Ray& ray, const BVHNode* nodes,
-                            const Triangle* triangles, Hit& closestHit) {
-    int stack[64];
-    int stackPtr = 0;
-    stack[stackPtr++] = 0; // Root node
-
-    bool hitAnything = false;
-    float closestT = FLT_MAX;
-
-    while (stackPtr > 0) {
-        int nodeIdx = stack[--stackPtr];
-        const BVHNode& node = nodes[nodeIdx];
-
-        if (!intersectAABB(ray, node.bounds)) continue;
-
-        if (node.isLeaf()) {
-            // Test intersection with triangles in leaf
-            for (int i = 0; i < node.primCount; i++) {
-                Hit hit;
-                if (intersectTriangle(ray, triangles[node.primOffset + i], hit)) {
-                    if (hit.t < closestT) {
-                        closestT = hit.t;
-                        closestHit = hit;
-                        hitAnything = true;
-                    }
-                }
-            }
-        } else {
-            stack[stackPtr++] = node.leftChild;
-            stack[stackPtr++] = node.rightChild;
-        }
-    }
-
-    return hitAnything;
+                        <pre><code class="language-cpp">// From cuda_kernels.cu
+__device__ bool intersect_bvh(...) {
+    // ... BVH traversal logic ...
 }</code></pre>
 
                         <h3>3. Memory Hierarchy Analysis</h3>
                         <p>
-                            Systematic comparison of three memory configurations for sphere data storage:
+                            A systematic comparison of three memory configurations for storing scene geometry was performed:
                         </p>
                         <ul class="improvement-list">
-                            <li><strong>Global Memory (187.4M rays/sec):</strong> Best performance due to L1/L2 cache utilization</li>
-                            <li><strong>Constant Memory (144.9M rays/sec):</strong> 29% slower - broadcast optimization ineffective for divergent access patterns</li>
-                            <li><strong>Texture Memory (165.2M rays/sec):</strong> 13% slower - hardware interpolation overhead not beneficial for sphere intersections</li>
+                            <li><strong>Global Memory (187.4M rays/sec):</strong> The best performing configuration due to effective L1/L2 cache utilization.</li>
+                            <li><strong>Constant Memory (144.9M rays/sec):</strong> 29% slower. The broadcast mechanism of constant memory is ineffective for divergent ray access patterns.</li>
+                            <li><strong>Texture Memory (165.2M rays/sec):</strong> 13% slower. The hardware interpolation and address calculation overhead is not beneficial for this workload.</li>
                         </ul>
                         <p>
-                            <strong>Key Finding:</strong> Global memory's superior performance indicates the kernel is
-                            <em>memory latency-bound</em>, not bandwidth-bound. Cache hierarchy becomes critical for performance,
-                            making global memory with L1/L2 caching optimal despite conventional wisdom favoring constant memory.
+                            <strong>Key Finding:</strong> The ray tracing workload is <strong>memory latency-bound</strong>, not bandwidth-bound. This makes the cache hierarchy crucial for performance, leading to global memory's superiority.
                         </p>
                     </div>
 
@@ -225,98 +184,25 @@
                             <div class="challenge-item">
                                 <h3><i class="fas fa-tachometer-alt"></i> Memory Latency Bottleneck</h3>
                                 <p>
-                                    <strong>Discovery:</strong> Global memory outperformed constant memory by 29% (187.4M vs 144.9M rays/sec),
-                                    contradicting expectations for read-only sphere data.
+                                    <strong>Discovery:</strong> Global memory outperformed constant memory by 29%, which was unexpected for read-only data.
                                 </p>
                                 <p>
-                                    <strong>Root Cause:</strong> Ray-sphere intersection exhibits highly divergent memory access patterns.
-                                    Constant memory's broadcast optimization requires uniform access; divergent warps serialize reads.
-                                    Global memory's L1/L2 cache hierarchy better handles irregular access patterns.
+                                    <strong>Root Cause:</strong> Ray tracing exhibits highly divergent memory access. Constant memory's broadcast optimization fails when threads in a warp access different data, serializing memory access. Global memory's L1/L2 cache hierarchy is better at handling these irregular access patterns.
                                 </p>
                             </div>
                             <div class="challenge-item">
                                 <h3><i class="fas fa-project-diagram"></i> Texture Memory Overhead</h3>
                                 <p>
-                                    Texture memory achieved 165.2M rays/sec (13% slower than global). Hardware interpolation
-                                    and address calculation overhead outweighed benefits for exact sphere coordinate lookups.
-                                    Texture memory excels for spatially coherent sampling, not geometric intersection tests.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-database"></i> Latency vs Bandwidth</h3>
-                                <p>
-                                    The 14B rays/frame workload revealed that ray tracing is <strong>memory latency-bound</strong>,
-                                    not bandwidth-bound. Cache hit rate became the dominant performance factor, explaining why
-                                    global memory's multi-level cache hierarchy (L1/L2) outperformed constant memory's single-level cache.
+                                    Texture memory was 13% slower than global memory. The hardware interpolation and address calculation features of texture memory, which are beneficial for tasks like texture mapping, introduced overhead for the exact geometric lookups required in ray tracing.
                                 </p>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Memory Configuration Performance Results</h2>
-                        <div class="metrics-table">
-                            <h3>Memory Hierarchy Comparison (1080p, 300 samples/pixel)</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Memory Type</th>
-                                        <th>Rays/Second</th>
-                                        <th>Relative Performance</th>
-                                        <th>Key Characteristic</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Global Memory</strong></td>
-                                        <td>187.4M</td>
-                                        <td>100% (Baseline)</td>
-                                        <td>L1/L2 cache, best for divergent access</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Texture Memory</td>
-                                        <td>165.2M</td>
-                                        <td>88% (-13%)</td>
-                                        <td>Hardware interpolation overhead</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Constant Memory</td>
-                                        <td>144.9M</td>
-                                        <td>77% (-29%)</td>
-                                        <td>Broadcast serialization on divergence</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                                <strong>Workload:</strong> 14 billion rays processed (1920×1080 × 300 samples × ~4 bounces)
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Key Insights</h2>
-                        <ul class="improvement-list">
-                            <li><strong>Memory latency dominates:</strong> Ray tracing is latency-bound, not bandwidth-bound - cache hierarchy is critical</li>
-                            <li><strong>Global memory wins for divergent access:</strong> L1/L2 caching outperforms constant memory's broadcast for irregular patterns</li>
-                            <li><strong>Texture memory has overhead:</strong> Hardware interpolation adds latency for exact geometric lookups</li>
-                            <li><strong>Constant memory requires uniformity:</strong> 29% performance penalty when warps access different sphere data</li>
-                            <li><strong>Workload characterization matters:</strong> Profiling revealed unexpected bottlenecks contradicting conventional wisdom</li>
-                        </ul>
                     </div>
 
                     <div class="project-section">
                         <h2>Conclusion</h2>
                         <p>
-                            This project achieved 187.4M rays/second peak performance through systematic analysis of CUDA
-                            memory hierarchies. The counterintuitive finding that global memory outperformed constant memory
-                            by 29% highlights the importance of empirical profiling over assumptions - ray tracing's divergent
-                            access patterns made cache hierarchy more critical than broadcast optimization.
-                        </p>
-                        <p>
-                            The 14 billion rays processed per 1080p frame (300 samples) demonstrated that ray tracing is
-                            memory latency-bound, not bandwidth-bound. This insight guided the final global memory configuration,
-                            leveraging L1/L2 caches to minimize latency for irregular access patterns typical of ray-scene
-                            intersection tests.
+                            This project successfully implemented a high-performance GPU-accelerated ray tracer, achieving 187.4 million rays per second. The key insight from this project was the counterintuitive finding that global memory, with its L1/L2 cache, is the optimal choice for storing scene geometry in a ray tracer with divergent access patterns. This highlights the importance of empirical profiling over relying on conventional wisdom in GPU optimization.
                         </p>
                     </div>
 
@@ -324,7 +210,7 @@
                         <a href="aircraft-fault-detection.html" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Previous Project
                         </a>
-                        <a href="slam-navigation.html" class="btn btn-primary">
+                        <a href="quadruped-rl.html" class="btn btn-primary">
                             Next Project <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>

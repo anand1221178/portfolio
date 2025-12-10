@@ -58,8 +58,8 @@
                         <div class="tech-stack">
                             <span class="tech-item">C</span>
                             <span class="tech-item">Data Structures</span>
-                            <span class="tech-item">CLRS Algorithms</span>
-                            <span class="tech-item">Empirical Analysis</span>
+                            <span class="tech-item">CLRS</span>
+                            <span class="tech-item">Performance Analysis</span>
                         </div>
                     </div>
                     <div class="sidebar-section">
@@ -67,25 +67,25 @@
                         <div class="project-stats">
                             <div class="stat">
                                 <span class="stat-value">O(log n)</span>
-                                <span class="stat-label">OS-SELECT/RANK</span>
+                                <span class="stat-label">Rank/Select</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">8-10%</span>
+                                <span class="stat-label">Augmentation Overhead</span>
                             </div>
                             <div class="stat">
                                 <span class="stat-value">80</span>
                                 <span class="stat-label">Data Points</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-value">8-10%</span>
-                                <span class="stat-label">OS-Tree Overhead</span>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-section">
                         <h3>Links</h3>
                         <div class="project-links">
-                            <a href="#" class="project-link">
+                            <a href="https://github.com/anand1221178/bst-os-tree" class="project-link" target="_blank">
                                 <i class="fab fa-github"></i> View on GitHub
                             </a>
-                            <a href="#" class="project-link">
+                            <a href="bst-os-tree-report.pdf" class="project-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Technical Report
                             </a>
                         </div>
@@ -96,15 +96,16 @@
                     <div class="project-overview">
                         <h2>Project Overview</h2>
                         <p>
-                            This project implements and analyzes Binary Search Trees (BST) and Order-Statistic Trees (OS-Tree)
-                            following CLRS Chapters 12 and 14. The implementation includes all core operations: insert, delete,
-                            search, and the augmented OS-SELECT and OS-RANK operations for finding the i-th smallest element
-                            and determining rank in O(log n) time.
+                            This project provides a from-scratch implementation and analysis of Binary Search Trees (BST)
+                            and Order-Statistic Trees (OS-Tree) in C, following the specifications in CLRS. The project
+                            includes all core BST operations and the augmented OS-SELECT and OS-RANK operations, which
+                            allow for finding the i-th smallest element and determining an element's rank in O(log n) time.
                         </p>
                         <p>
-                            Through empirical testing with 80 data points and triple averaging, the analysis verifies theoretical
-                            O(log n) complexity for balanced trees and measures the overhead of size augmentation. OS-Trees incur
-                            8-10% performance overhead compared to plain BSTs while enabling powerful rank-based queries.
+                            Through comprehensive empirical testing, the project verifies the theoretical complexities and
+                            quantifies the performance overhead of augmenting a data structure. The results show that OS-Trees
+                            incur a minimal 8-10% performance overhead on insertion and deletion operations while providing
+                            powerful rank-based query capabilities.
                         </p>
                     </div>
 
@@ -113,23 +114,23 @@
                         <div class="feature-grid">
                             <div class="feature-card">
                                 <i class="fas fa-sitemap"></i>
-                                <h3>BST Core Operations</h3>
-                                <p>Insert, delete, search with O(log n) average complexity</p>
+                                <h3>BST Implementation</h3>
+                                <p>A from-scratch implementation of all core BST operations as specified in CLRS.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-plus-circle"></i>
                                 <h3>Size Augmentation</h3>
-                                <p>Each node stores subtree size for rank queries</p>
+                                <p>Each node in the OS-Tree is augmented to store its subtree size, enabling rank queries.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-search"></i>
-                                <h3>OS-SELECT O(log n)</h3>
-                                <p>Find the i-th smallest element efficiently</p>
+                                <h3>O(log n) OS-SELECT</h3>
+                                <p>An efficient implementation of the OS-SELECT operation to find the i-th smallest element.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-sort-numeric-up"></i>
-                                <h3>OS-RANK O(log n)</h3>
-                                <p>Determine element rank without full traversal</p>
+                                <h3>O(log n) OS-RANK</h3>
+                                <p>An efficient implementation of the OS-RANK operation to determine the rank of an element.</p>
                             </div>
                         </div>
                     </div>
@@ -137,242 +138,66 @@
                     <div class="project-section">
                         <h2>Technical Implementation</h2>
 
-                        <h3>1. Binary Search Tree Structure</h3>
+                        <h3>1. Binary Search Tree (BST)</h3>
                         <p>
-                            Basic BST node with parent pointers for efficient traversal:
+                            A standard BST implementation with nodes containing a key, and pointers to the parent, left child, and right child.
                         </p>
-                        <pre><code class="language-c">#include <stdlib.h>
-#include <stdio.h>
-
-typedef struct BSTNode {
-    int key;
-    struct BSTNode *left;
-    struct BSTNode *right;
-    struct BSTNode *parent;
-} BSTNode;
-
-// BST Insert - CLRS Chapter 12
+                        <pre><code class="language-c">// From src/bst.c
 void bst_insert(BSTNode **root, int key) {
-    BSTNode *new_node = (BSTNode*)malloc(sizeof(BSTNode));
-    new_node->key = key;
-    new_node->left = new_node->right = new_node->parent = NULL;
-
-    BSTNode *y = NULL;  // Trailing pointer
-    BSTNode *x = *root;
-
-    // Find insertion position
-    while (x != NULL) {
-        y = x;
-        if (key < x->key)
-            x = x->left;
-        else
-            x = x->right;
-    }
-
-    new_node->parent = y;
-
-    if (y == NULL)
-        *root = new_node;  // Tree was empty
-    else if (key < y->key)
-        y->left = new_node;
-    else
-        y->right = new_node;
+    // ... CLRS Chapter 12 implementation ...
 }
+</code></pre>
 
-// Complexity: O(h) where h is height
-// Average case: O(log n) for balanced tree</code></pre>
-
-                        <h3>2. Order-Statistic Tree with Size Augmentation</h3>
+                        <h3>2. Order-Statistic Tree (OS-Tree)</h3>
                         <p>
-                            Extended BST node maintaining subtree size for rank operations:
+                            The BST is augmented to create an OS-Tree. Each node is modified to include a `size` field, which stores the number of nodes in its subtree. This `size` field is maintained during insertion and deletion operations.
                         </p>
-                        <pre><code class="language-c">typedef struct OSTreeNode {
+                        <pre><code class="language-c">// From include/os_tree.h
+typedef struct OSTreeNode {
     int key;
-    int size;  // Number of nodes in subtree rooted at this node
-    struct OSTreeNode *left;
-    struct OSTreeNode *right;
-    struct OSTreeNode *parent;
+    int size; // Number of nodes in subtree
+    // ... pointers ...
 } OSTreeNode;
 
-// OS-SELECT: Find i-th smallest element - CLRS Chapter 14
-OSTreeNode* os_select(OSTreeNode *x, int i) {
-    int rank = (x->left != NULL) ? x->left->size + 1 : 1;
-
-    if (i == rank)
-        return x;
-    else if (i < rank)
-        return os_select(x->left, i);
-    else
-        return os_select(x->right, i - rank);
-}
-
-// OS-RANK: Determine rank of element x
-int os_rank(OSTreeNode *root, OSTreeNode *x) {
-    int rank = (x->left != NULL) ? x->left->size + 1 : 1;
-    OSTreeNode *y = x;
-
-    while (y != root) {
-        if (y == y->parent->right)
-            rank += (y->parent->left ? y->parent->left->size : 0) + 1;
-        y = y->parent;
-    }
-
-    return rank;
-}
-
-// Both operations: O(log n) for balanced tree
-// Key insight: Size augmentation maintained during insert/delete</code></pre>
-
-                        <h3>3. Maintaining Size Augmentation</h3>
-                        <p>
-                            Size field must be updated during insert and delete operations:
-                        </p>
-                        <pre><code class="language-c">// Update size after insertion
-void update_size_insert(OSTreeNode *node) {
-    while (node != NULL) {
-        node->size = 1;
-        if (node->left != NULL)
-            node->size += node->left->size;
-        if (node->right != NULL)
-            node->size += node->right->size;
-        node = node->parent;
-    }
-}
-
-// OS-Tree Insert with size maintenance
-void os_tree_insert(OSTreeNode **root, int key) {
-    // ... standard BST insert logic ...
-
-    // Update sizes from new_node to root
-    update_size_insert(new_node);
-}
-
-// Overhead: O(log n) size updates along insertion path
-// Empirical measurement: 8-10% slower than plain BST insert</code></pre>
+// From src/os_tree.c
+// The OS-SELECT and OS-RANK operations use the size field
+// to perform their calculations in O(log n) time.
+</code></pre>
                     </div>
 
                     <div class="project-section">
-                        <h2>Empirical Performance Analysis</h2>
-                        <p>
-                            Comprehensive testing across 80 data points with triple averaging to minimize variance:
-                        </p>
+                        <h2>Performance Analysis</h2>
                         <div class="metrics-table">
-                            <h3>Operation Complexity Verification</h3>
+                            <h3>OS-Tree vs. BST Overhead</h3>
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Tree Size (n)</th>
-                                        <th>BST Height</th>
-                                        <th>Insert Time (μs)</th>
-                                        <th>OS-SELECT (μs)</th>
-                                        <th>OS-RANK (μs)</th>
+                                        <th>Operation</th>
+                                        <th>Performance Overhead</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>1,000</td>
-                                        <td>~10</td>
-                                        <td>0.45</td>
-                                        <td>0.52</td>
-                                        <td>0.48</td>
+                                        <td>Insertion</td>
+                                        <td>~8%</td>
                                     </tr>
                                     <tr>
-                                        <td>10,000</td>
-                                        <td>~13</td>
-                                        <td>0.58</td>
-                                        <td>0.67</td>
-                                        <td>0.62</td>
-                                    </tr>
-                                    <tr>
-                                        <td>100,000</td>
-                                        <td>~17</td>
-                                        <td>0.73</td>
-                                        <td>0.84</td>
-                                        <td>0.78</td>
-                                    </tr>
-                                    <tr>
-                                        <td>1,000,000</td>
-                                        <td>~20</td>
-                                        <td>0.91</td>
-                                        <td>1.02</td>
-                                        <td>0.95</td>
+                                        <td>Deletion</td>
+                                        <td>~10%</td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                                <strong>Verification:</strong> Heights closely match log₂(n), confirming O(log n) complexity for operations
-                            </p>
                         </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Performance Overhead Analysis</h2>
-                        <div class="challenge-list">
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-chart-bar"></i> OS-Tree vs Plain BST Overhead</h3>
-                                <p>
-                                    <strong>Measurement:</strong> OS-Trees incur 8-10% performance overhead for insert/delete
-                                    operations due to size field maintenance along the path to root.
-                                </p>
-                                <p>
-                                    <strong>Trade-off Analysis:</strong> This small overhead enables O(log n) rank queries
-                                    versus O(n) for in-order traversal on plain BST - a worthwhile trade-off for applications
-                                    requiring frequent rank operations.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-balance-scale"></i> Height Verification</h3>
-                                <p>
-                                    Empirical heights closely matched theoretical log₂(n) for randomly inserted data,
-                                    confirming balanced tree properties. For n=1,000,000, measured height was ~20 vs
-                                    theoretical ~19.93.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-database"></i> Memory Overhead</h3>
-                                <p>
-                                    Each OS-Tree node requires one additional integer (size field) compared to plain BST,
-                                    representing ~20% memory overhead on 64-bit systems (4 bytes size vs 20 bytes for pointers+key).
-                                    Acceptable for the functionality gained.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Comprehensive Testing Methodology</h2>
-                        <ul class="improvement-list">
-                            <li><strong>80 data points:</strong> Extensive testing across multiple tree sizes for statistical significance</li>
-                            <li><strong>Triple averaging:</strong> Each measurement averaged across 3 runs to reduce variance</li>
-                            <li><strong>8 comprehensive graphs:</strong> Visualizing height, insert time, OS-SELECT, OS-RANK, and overhead comparisons</li>
-                            <li><strong>Random insertion order:</strong> Simulates realistic usage patterns and ensures balanced trees</li>
-                            <li><strong>CLRS specification compliance:</strong> Exact implementation following textbook algorithms</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Key Insights</h2>
-                        <ul class="improvement-list">
-                            <li><strong>O(log n) verified empirically:</strong> Heights matched log₂(n) across all test sizes</li>
-                            <li><strong>Minimal augmentation overhead:</strong> 8-10% slowdown for powerful rank query capabilities</li>
-                            <li><strong>Size maintenance is local:</strong> Only O(log n) nodes updated per insert/delete</li>
-                            <li><strong>Rank queries 10× faster:</strong> O(log n) vs O(n) in-order traversal on plain BST</li>
-                            <li><strong>Memory overhead acceptable:</strong> 20% per-node increase for significant functionality gain</li>
-                        </ul>
                     </div>
 
                     <div class="project-section">
                         <h2>Conclusion</h2>
                         <p>
-                            This project successfully implements and validates Binary Search Trees and Order-Statistic Trees
-                            following CLRS specifications. Empirical testing with 80 data points confirms theoretical O(log n)
-                            complexity for all operations, with measured tree heights closely matching log₂(n) for balanced trees.
-                        </p>
-                        <p>
-                            The 8-10% performance overhead for OS-Tree augmentation represents an excellent trade-off, enabling
-                            O(log n) rank queries versus O(n) traversal on plain BSTs. This demonstrates the power of careful
-                            data structure augmentation: maintaining additional metadata (subtree size) during standard operations
-                            unlocks new capabilities with minimal cost.
+                            This project successfully implements and analyzes BSTs and OS-Trees. The empirical results
+                            confirm the theoretical complexities and demonstrate that the 8-10% performance overhead for
+                            augmenting the data structure is a small price to pay for the powerful O(log n) rank-based
+                            queries that OS-Trees provide. This serves as a practical example of the trade-offs involved
+                            in data structure design.
                         </p>
                     </div>
 
@@ -380,8 +205,8 @@ void os_tree_insert(OSTreeNode **root, int key) {
                         <a href="parallel-knn.html" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Previous Project
                         </a>
-                        <a href="../index.html#projects" class="btn btn-primary">
-                            Back to Projects <i class="fas fa-arrow-right"></i>
+                        <a href="crafter-rl.html" class="btn btn-primary">
+                            Next Project <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </main>

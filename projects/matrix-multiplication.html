@@ -58,7 +58,7 @@
                         <div class="tech-stack">
                             <span class="tech-item">C</span>
                             <span class="tech-item">Algorithm Analysis</span>
-                            <span class="tech-item">Divide & Conquer</span>
+                            <span class="tech-item">Benchmarking</span>
                             <span class="tech-item">Complexity Theory</span>
                         </div>
                     </div>
@@ -71,21 +71,21 @@
                             </div>
                             <div class="stat">
                                 <span class="stat-value">n=4096</span>
-                                <span class="stat-label">Max Size Tested</span>
+                                <span class="stat-label">Max Size</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">~16K</span>
-                                <span class="stat-label">Crossover Point</span>
+                                <span class="stat-value">1.59x</span>
+                                <span class="stat-label">Slower</span>
                             </div>
                         </div>
                     </div>
                     <div class="sidebar-section">
                         <h3>Links</h3>
                         <div class="project-links">
-                            <a href="#" class="project-link">
+                            <a href="https://github.com/anand1221178/matmul" class="project-link" target="_blank">
                                 <i class="fab fa-github"></i> View on GitHub
                             </a>
-                            <a href="#" class="project-link">
+                            <a href="matrix-multiplication-report.pdf" class="project-link" target="_blank">
                                 <i class="fas fa-file-pdf"></i> Technical Report
                             </a>
                         </div>
@@ -96,15 +96,17 @@
                     <div class="project-overview">
                         <h2>Project Overview</h2>
                         <p>
-                            This project implements and analyzes three matrix multiplication algorithms in C: naive O(n³),
-                            divide-and-conquer recursive O(n³), and Strassen's algorithm O(n^2.81). Through empirical testing
-                            up to n=4096, the analysis reveals that Strassen's algorithm's theoretical advantage doesn't
-                            materialize in practice due to memory overhead and cache inefficiency.
+                            This project implements and analyzes three matrix multiplication algorithms from CLRS in C: the naive O(n³) algorithm,
+                            a recursive O(n³) divide-and-conquer approach, and Strassen's O(n^2.81) algorithm. Through empirical testing
+                            up to n=4096, the project demonstrates that Strassen's algorithm, despite its superior asymptotic complexity,
+                            is 1.59x slower than the naive implementation due to memory overhead and cache inefficiency.
                         </p>
                         <p>
-                            The key finding: Strassen runs 3× slower than naive multiplication for practical matrix sizes,
-                            with an estimated crossover point at n≈16,000. This demonstrates the critical importance of
-                            constant factors and memory hierarchy in real-world algorithm performance, beyond asymptotic complexity.
+                            The key finding is that the theoretical advantage of Strassen's algorithm is overshadowed by large constant
+                            factors and poor memory hierarchy utilization in practice. The estimated crossover point where Strassen's
+                            algorithm would outperform the naive implementation is around n≈16,000, which is often an impractically
+                            large matrix size. This project highlights the critical importance of empirical analysis in understanding
+                            real-world algorithm performance.
                         </p>
                     </div>
 
@@ -114,22 +116,22 @@
                             <div class="feature-card">
                                 <i class="fas fa-cubes"></i>
                                 <h3>Naive O(n³)</h3>
-                                <p>Standard triple-nested loop baseline implementation</p>
+                                <p>The standard triple-nested loop implementation, serving as a cache-friendly baseline.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-project-diagram"></i>
                                 <h3>Recursive O(n³)</h3>
-                                <p>Divide-and-conquer using 8 recursive calls</p>
+                                <p>A divide-and-conquer approach that makes 8 recursive calls, demonstrating the overhead of recursion.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-lightbulb"></i>
-                                <h3>Strassen O(n^2.81)</h3>
-                                <p>Optimized with 7 recursive calls instead of 8</p>
+                                <h3>Strassen's O(n^2.81)</h3>
+                                <p>An optimized divide-and-conquer algorithm that uses 7 recursive calls instead of 8.</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-chart-line"></i>
                                 <h3>Empirical Analysis</h3>
-                                <p>Tested up to n=4096 with detailed benchmarking</p>
+                                <p>Detailed benchmarking of all three algorithms for matrix sizes up to n=4096.</p>
                             </div>
                         </div>
                     </div>
@@ -137,13 +139,11 @@
                     <div class="project-section">
                         <h2>Technical Implementation</h2>
 
-                        <h3>1. Naive Matrix Multiplication O(n³)</h3>
+                        <h3>1. Naive Matrix Multiplication (O(n³))</h3>
                         <p>
-                            Baseline implementation using standard triple-nested loops:
+                            The baseline is the standard triple-nested loop algorithm. Its sequential memory access pattern makes it highly cache-efficient.
                         </p>
-                        <pre><code class="language-c">#include <stdlib.h>
-
-// Naive O(n^3) matrix multiplication
+                        <pre><code class="language-c">// From src/naive.c
 void naive_multiply(int n, double **A, double **B, double **C) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -153,79 +153,33 @@ void naive_multiply(int n, double **A, double **B, double **C) {
             }
         }
     }
-}
+}</code></pre>
 
-// Complexity: Θ(n^3) additions, Θ(n^3) multiplications
-// Most cache-friendly due to sequential memory access</code></pre>
-
-                        <h3>2. Recursive Divide-and-Conquer O(n³)</h3>
+                        <h3>2. Recursive Divide-and-Conquer (O(n³))</h3>
                         <p>
-                            Divides matrices into quadrants, making 8 recursive calls:
+                            This algorithm divides the matrices into quadrants and performs 8 recursive multiplications. It has the same asymptotic complexity as the naive algorithm but with significantly more overhead.
                         </p>
-                        <pre><code class="language-c">// Recursive matrix multiplication: T(n) = 8T(n/2) + Θ(n^2)
+                        <pre><code class="language-c">// From src/recursive.c
 void recursive_multiply(int n, double **A, double **B, double **C) {
     if (n == 1) {
         C[0][0] = A[0][0] * B[0][0];
         return;
     }
+    // ... 8 recursive calls ...
+}</code></pre>
 
-    int mid = n / 2;
-
-    // Allocate submatrices (A11, A12, A21, A22, B11, B12, B21, B22)
-    // ... allocation code ...
-
-    // 8 recursive multiplications:
-    // C11 = A11*B11 + A12*B21
-    recursive_multiply(mid, A11, B11, temp1);
-    recursive_multiply(mid, A12, B21, temp2);
-    matrix_add(mid, temp1, temp2, C11);
-
-    // C12 = A11*B12 + A12*B22
-    recursive_multiply(mid, A11, B12, temp1);
-    recursive_multiply(mid, A12, B22, temp2);
-    matrix_add(mid, temp1, temp2, C12);
-
-    // ... similar for C21, C22 ...
-}
-
-// Solves to O(n^3) same as naive, but with memory overhead</code></pre>
-
-                        <h3>3. Strassen's Algorithm O(n^2.81)</h3>
+                        <h3>3. Strassen's Algorithm (O(n^2.81))</h3>
                         <p>
-                            Reduces recursive calls from 8 to 7 using clever intermediate matrices:
+                            Strassen's algorithm reduces the number of recursive calls from 8 to 7, which leads to a better asymptotic complexity. However, it requires additional matrix additions and subtractions, and significant temporary matrix allocations.
                         </p>
-                        <pre><code class="language-c">// Strassen: T(n) = 7T(n/2) + Θ(n^2) → O(n^2.81)
+                        <pre><code class="language-c">// From src/strassen.c
 void strassen_multiply(int n, double **A, double **B, double **C) {
-    if (n <= 128) {  // Base case: switch to naive for small matrices
+    if (n <= 128) {  // Base case: switch to naive
         naive_multiply(n, A, B, C);
         return;
     }
-
-    int mid = n / 2;
-
-    // Allocate submatrices and intermediate matrices M1-M7
-    // ... allocation ...
-
-    // Compute 7 products (instead of 8):
-    // M1 = (A11 + A22) * (B11 + B22)
-    matrix_add(mid, A11, A22, temp1);
-    matrix_add(mid, B11, B22, temp2);
-    strassen_multiply(mid, temp1, temp2, M1);
-
-    // M2 = (A21 + A22) * B11
-    matrix_add(mid, A21, A22, temp1);
-    strassen_multiply(mid, temp1, B11, M2);
-
-    // ... M3 through M7 ...
-
-    // Combine into result:
-    // C11 = M1 + M4 - M5 + M7
-    // C12 = M3 + M5
-    // C21 = M2 + M4
-    // C22 = M1 - M2 + M3 + M6
-}
-
-// Asymptotic: O(n^2.807...) but constant factors dominate</code></pre>
+    // ... 7 recursive calls and combination logic ...
+}</code></pre>
                     </div>
 
                     <div class="project-section">
@@ -242,24 +196,6 @@ void strassen_multiply(int n, double **A, double **B, double **C) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>128</td>
-                                        <td>0.012</td>
-                                        <td>0.095</td>
-                                        <td>0.031</td>
-                                    </tr>
-                                    <tr>
-                                        <td>256</td>
-                                        <td>0.089</td>
-                                        <td>0.723</td>
-                                        <td>0.217</td>
-                                    </tr>
-                                    <tr>
-                                        <td>512</td>
-                                        <td>0.654</td>
-                                        <td>5.621</td>
-                                        <td>1.513</td>
-                                    </tr>
                                     <tr>
                                         <td>1024</td>
                                         <td>5.103</td>
@@ -281,7 +217,7 @@ void strassen_multiply(int n, double **A, double **B, double **C) {
                                 </tbody>
                             </table>
                             <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                                <strong>Key Finding:</strong> Strassen is 1.59× slower than naive at n=4096. Estimated crossover at n≈16,000
+                                <strong>Key Finding:</strong> At n=4096, Strassen's algorithm is 1.59× slower than the naive implementation.
                             </p>
                         </div>
                     </div>
@@ -290,66 +226,32 @@ void strassen_multiply(int n, double **A, double **B, double **C) {
                         <h2>Analysis and Insights</h2>
                         <div class="challenge-list">
                             <div class="challenge-item">
-                                <h3><i class="fas fa-exclamation-circle"></i> Memory Overhead Dominates</h3>
+                                <h3><i class="fas fa-exclamation-circle"></i> Memory Overhead</h3>
                                 <p>
-                                    <strong>Issue:</strong> Strassen allocates 10+ temporary matrices per recursive call,
-                                    causing massive memory overhead and cache thrashing.
+                                    <strong>Issue:</strong> Strassen's algorithm allocates numerous temporary matrices at each recursive step, leading to significant memory overhead and cache thrashing.
                                 </p>
                                 <p>
-                                    <strong>Impact:</strong> At n=4096, Strassen uses ~1.5GB temporary storage vs naive's 128MB,
-                                    destroying cache locality and causing 3× slowdown despite better asymptotic complexity.
+                                    <strong>Impact:</strong> At n=4096, Strassen's algorithm uses approximately 1.5GB of temporary storage, compared to 128MB for the naive algorithm. This destroys cache locality and results in a 3x slowdown.
                                 </p>
                             </div>
                             <div class="challenge-item">
-                                <h3><i class="fas fa-exclamation-circle"></i> Cache Inefficiency</h3>
+                                <h3><i class="fas fa-chart-line"></i> Crossover Point</h3>
                                 <p>
-                                    <strong>Root Cause:</strong> Recursive divide-and-conquer fragments matrix access patterns,
-                                    while naive's sequential iteration maximizes cache hits.
-                                </p>
-                                <p>
-                                    <strong>Measurement:</strong> Naive achieves ~85% L1 cache hit rate; Strassen drops to ~45%,
-                                    leading to 2-3× more memory stalls per operation.
-                                </p>
-                            </div>
-                            <div class="challenge-item">
-                                <h3><i class="fas fa-chart-line"></i> Crossover Point Estimation</h3>
-                                <p>
-                                    <strong>Analysis:</strong> Extrapolating growth rates suggests Strassen overtakes naive
-                                    at n≈16,000. However, at this size (2GB+ per matrix), memory bandwidth becomes the bottleneck,
-                                    potentially negating asymptotic advantage entirely.
+                                    <strong>Analysis:</strong> By extrapolating the growth rates, the crossover point where Strassen's algorithm would become faster than the naive implementation is estimated to be at n≈16,000. For most practical applications, this is an impractically large matrix size.
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <div class="project-section">
-                        <h2>Key Takeaways</h2>
-                        <ul class="improvement-list">
-                            <li><strong>Asymptotic complexity isn't everything:</strong> O(n^2.81) lost to O(n³) due to constants and memory hierarchy</li>
-                            <li><strong>Cache locality matters more than theory:</strong> Naive's sequential access pattern won decisively</li>
-                            <li><strong>Memory overhead kills performance:</strong> Strassen's 10× memory usage caused cache thrashing</li>
-                            <li><strong>Crossover points can be impractically large:</strong> n≈16,000 exceeds typical matrix sizes</li>
-                            <li><strong>Real-world performance requires empirical testing:</strong> Theory predicted advantage, practice showed opposite</li>
-                        </ul>
-                    </div>
-
-                    <div class="project-section">
                         <h2>Conclusion</h2>
                         <p>
-                            This project demonstrates the critical gap between theoretical and practical algorithm performance.
-                            While Strassen's O(n^2.81) algorithm is asymptotically superior to the naive O(n³) approach, empirical
-                            testing up to n=4096 revealed it runs 1.59× slower in practice due to memory overhead and cache inefficiency.
-                        </p>
-                        <p>
-                            The estimated crossover point at n≈16,000 highlights that constant factors and memory hierarchy effects
-                            can dominate asymptotic advantages for practical problem sizes. This reinforces the importance of
-                            empirical analysis and understanding the full performance picture beyond Big-O notation - a critical
-                            lesson for high-performance computing and systems programming.
+                            This project highlights the crucial difference between theoretical and practical algorithm performance. While Strassen's algorithm is asymptotically faster, the naive algorithm is significantly faster in practice for all but the largest matrix sizes. This is due to the naive algorithm's superior cache locality and lower memory overhead. The project serves as a clear demonstration that Big-O notation does not tell the whole story, and empirical testing is essential for understanding real-world performance.
                         </p>
                     </div>
 
                     <div class="navigation-buttons">
-                        <a href="slam-navigation.html" class="btn btn-secondary">
+                        <a href="quadruped-rl.html" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Previous Project
                         </a>
                         <a href="parallel-knn.html" class="btn btn-primary">
