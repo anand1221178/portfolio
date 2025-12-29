@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Work-Stealing Thread Pool - Anand's Portfolio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html">Anand</a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html#home" class="nav-link">Home</a>
+                <a href="../index.html#about" class="nav-link">About</a>
+                <a href="../index.html#education" class="nav-link">Education</a>
+                <a href="../index.html#projects" class="nav-link">Projects</a>
+                <a href="../index.html#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Work-Stealing Thread Pool</span>
+            </div>
+            <h1 class="project-title">Lock-Free Work-Stealing Thread Pool for Bare-Metal Raspberry Pi</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2024</span>
+                <span><i class="fas fa-tag"></i> Bare-Metal, Systems Programming, HPC</span>
+                <span><i class="fas fa-clock"></i> 5 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies Used</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">C++</span>
+                            <span class="tech-item">ARM Assembly</span>
+                            <span class="tech-item">Bare-Metal</span>
+                            <span class="tech-item">Lock-Free</span>
+                            <span class="tech-item">Circle Framework</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Key Concepts</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">Chase-Lev</span>
+                                <span class="stat-label">Deque</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">Lock-Free</span>
+                                <span class="stat-label">Synchronization</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">Raspberry Pi</span>
+                                <span class="stat-label">Hardware</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="https://github.com/anand1221178/pi-kernal/tree/main/sample/45-workstealing" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Project Overview</h2>
+                        <p>
+                            This project is a lock-free, work-stealing thread pool designed for a bare-metal Raspberry Pi 4 using the
+                            Circle C++ framework. The implementation is based on the Chase-Lev deque algorithm, which allows for
+                            efficient task distribution in a multi-core environment without the use of mutexes or other locking
+                            primitives. This makes it highly suitable for real-time and high-performance computing scenarios where
+                            contention and scheduling overhead must be minimized.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-cogs"></i>
+                                <h3>Task System</h3>
+                                <p>A lightweight task abstraction with a function pointer and data payload, avoiding heap allocation.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-retweet"></i>
+                                <h3>Lock-Free Deque</h3>
+                                <p>A Chase-Lev work-stealing deque that allows for thread-safe LIFO push/pop by the owner and FIFO stealing by thieves.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-microchip"></i>
+                                <h3>Per-Core Workers</h3>
+                                <p>Each CPU core has a dedicated worker thread that executes tasks from its local deque and steals from other cores when idle.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-sitemap"></i>
+                                <h3>Thread Pool Manager</h3>
+                                <p>Manages the worker threads and coordinates the work-stealing process between them.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Implementation</h2>
+
+                        <h3>1. Chase-Lev Work-Stealing Deque</h3>
+                        <p>
+                            The core of the work-stealing scheduler is the lock-free deque. It provides a way for worker threads to efficiently manage their own task queues while allowing other threads to "steal" work when they become idle.
+                        </p>
+                        <pre><code class="language-cpp">// From workdeque.h
+template<typename T>
+class WorkDeque {
+public:
+    // Pushes a task to the bottom of the deque (owner only)
+    void push(T task);
+
+    // Pops a task from the bottom of the deque (owner only)
+    T pop();
+
+    // Steals a task from the top of the deque (thieves only)
+    T steal();
+private:
+    std::atomic<size_t> top;
+    std.atomic<size_t> bottom;
+    std::vector<T> buffer;
+};
+</code></pre>
+
+                        <h3>2. Worker Thread</h3>
+                        <p>
+                            Each worker thread runs on a dedicated core and has its own work deque. When its deque is empty, it attempts to steal work from a randomly selected victim.
+                        </p>
+                        <pre><code class="language-cpp">// From worker.cpp
+void Worker::run() {
+    while (!should_exit) {
+        Task task = local_deque.pop();
+        if (task.isValid()) {
+            task.execute();
+            tasks_executed++;
+        } else {
+            Task stolen_task = thread_pool->steal_task();
+            if (stolen_task.isValid()) {
+                stolen_task.execute();
+                tasks_stolen++;
+            }
+        }
+    }
+}
+</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Synchronization</h2>
+                        <p>
+                            The entire implementation is lock-free, relying on atomic operations and memory barriers for thread safety.
+                        </p>
+                        <ul class="improvement-list">
+                            <li><strong>Atomic Operations:</strong> `__sync_fetch_and_add` and `__sync_bool_compare_and_swap` are used for all shared variable manipulations.</li>
+                            <li><strong>Memory Barriers:</strong> `DataMemBarrier()` is used to enforce memory ordering guarantees on the ARM architecture.</li>
+                        </ul>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Conclusion</h2>
+                        <p>
+                            This project was a deep dive into low-level systems programming and concurrency on a bare-metal platform.
+                            Implementing a lock-free, work-stealing thread pool from scratch provided valuable experience with
+                            atomic operations, memory barriers, and the challenges of writing correct and efficient concurrent code
+                            without the safety nets of an operating system. The final implementation provides a scalable and efficient
+                            task scheduling system for multi-core embedded systems.
+                        </p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="crafter-rl.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Project
+                        </a>
+                        <a href="../index.html#projects" class="btn btn-primary">
+                            Back to Projects <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Anand. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/anand1221178" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+</body>
+</html>
