@@ -3,387 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anand's Portfolio</title>
+    <meta name="description" content="Anand Patel - Computer Science Honours Graduate specializing in High-Performance Computing, Systems Programming, and CUDA development.">
+    <meta name="theme-color" content="#09090b">
+    <title>Anand Patel | Systems Programmer & HPC Specialist</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="#home">Anand</a>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
             </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="#home" class="nav-link">Home</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#education" class="nav-link">Education</a>
-                <a href="#projects" class="nav-link">Projects</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-toggle" id="nav-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Hi, I'm Anand</h1>
-            <p class="hero-subtitle">Computer Science Honours Graduate | Systems Programmer | HPC Specialist</p>
-            <p class="hero-description">
-                Passionate about high-performance computing, low-level systems programming, and parallel algorithm optimization.
-                Recent Honours graduate from Wits University (4.0 GPA, Dean's List 2024) with expertise in CUDA, C/C++, and distributed computing,
-                seeking opportunities to push the boundaries of computational performance.
-            </p>
-            <div class="hero-buttons">
-                <a href="#projects" class="btn btn-primary">View My Work</a>
-                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-            </div>
-        </div>
-        <div class="hero-animation">
-            <div class="floating-element"></div>
-        </div>
-    </section>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+    </div>
 
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        I'm a Computer Science Honours graduate from Wits University (4.0 GPA, Dean's List 2024) with a deep passion for
-                        systems programming and high-performance computing. My work spans GPU-accelerated computing with CUDA,
-                        parallel algorithm optimization, and low-level systems development.
-                    </p>
-                    <p>
-                        Recognized nationally as the best male performer in Africa at the 2023 CHPC-SCC competition (2nd place overall),
-                        I thrive on challenging problems that require squeezing every ounce of performance from hardware through
-                        optimized algorithms, parallel processing, and efficient system design.
-                    </p>
-                    <div class="skills">
-                        <h3>Technologies I Work With</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">C/C++</span>
-                            <span class="skill-tag">CUDA</span>
-                            <span class="skill-tag">OpenMP</span>
-                            <span class="skill-tag">MPI</span>
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Systems Programming</span>
-                            <span class="skill-tag">Parallel Computing</span>
-                            <span class="skill-tag">PostgreSQL</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-stats">
-                    <div class="stat-card">
-                        <i class="fas fa-rocket"></i>
-                        <h3>10+</h3>
-                        <p>Projects Completed</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-code"></i>
-                        <h3>5+</h3>
-                        <p>Languages</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h3>4.0 GPA</h3>
-                        <p>Honours Graduate</p>
-                    </div>
-                </div>
+    <!-- Hero Section - Bento Grid -->
+    <section class="hero" id="home">
+        <div class="hero-grid">
+            <!-- Main Hero Card -->
+            <div class="bento hero-main fade-up">
+                <span class="hero-label">Available for Opportunities</span>
+                <h1 class="hero-name">Hi, I'm <span>Anand</span></h1>
+                <p class="hero-title">Systems Programmer & HPC Specialist</p>
+                <p class="hero-desc">
+                    I build high-performance systems that push hardware to its limits. 
+                    From GPU-accelerated ray tracers to bare-metal thread pools, 
+                    I love squeezing every ounce of performance from code.
+                </p>
             </div>
-        </div>
-    </section>
 
-    <section id="education" class="education">
-        <div class="container">
-            <h2 class="section-title">Education</h2>
-            <div class="education-timeline">
-                <div class="education-item">
-                    <div class="education-year">2024 - 2025</div>
-                    <div class="education-content">
-                        <h3>Bachelor of Science Honours in Computer Science</h3>
-                        <h4>University of the Witwatersrand</h4>
-                        <div class="education-details">
-                            <p><strong>GPA:</strong> 4.0 | <strong>Dean's List 2024</strong></p>
-                            <p><strong>Research Focus:</strong> Robust Quadruped Reinforcement Learning - training the RealAnt robot to function under sensor noise and joint failures</p>
-                            <p><strong>Key Courses:</strong></p>
-                            <ul>
-                                <li>High Performance Computing</li>
-                                <li>Probabilistic Graphical Models</li>
-                                <li>Advanced Computational Machine Learning</li>
-                                <li>Robotics</li>
-                                <li>Reinforcement Learning and Discrete Optimisation</li>
-                                <li>Applications of Algorithms</li>
-                            </ul>
-                        </div>
-                    </div>
+            <!-- Stats Card -->
+            <div class="bento hero-stats fade-up stagger-1">
+                <div class="stat">
+                    <div class="stat-value">4.0</div>
+                    <div class="stat-label">GPA</div>
                 </div>
-                <div class="education-item">
-                    <div class="education-year">2022 - 2024</div>
-                    <div class="education-content">
-                        <h3>Bachelor of Science in Computer Science</h3>
-                        <h4>University of the Witwatersrand</h4>
-                        <div class="education-details">
-                            <p><strong>Awards:</strong> Certificate of Merit | Subject Awards in Algorithms and Programming</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="education-item">
-                    <div class="education-year">2017 - 2021</div>
-                    <div class="education-content">
-                        <h3>National Senior Certificate</h3>
-                        <h4>Parktown Boys' High School</h4>
-                    </div>
+                <div class="stat">
+                    <div class="stat-value">10+</div>
+                    <div class="stat-label">Projects</div>
                 </div>
             </div>
 
-            <div class="awards-section">
-                <h3>Awards & Recognition</h3>
-                <div class="awards-grid">
-                    <div class="award-card">
-                        <i class="fas fa-trophy"></i>
-                        <h4>2023 CHPC-SCC</h4>
-                        <p>Best Male Performer in Africa</p>
-                    </div>
-                    <div class="award-card">
-                        <i class="fas fa-medal"></i>
-                        <h4>2023 CHPC-SCC</h4>
-                        <p>2nd Place Overall</p>
-                    </div>
-                    <div class="award-card">
-                        <i class="fas fa-trophy"></i>
-                        <h4>Afretec Innovation Summit</h4>
-                        <p>2nd Place Overall</p>
-                    </div>
-                    <div class="award-card">
-                        <i class="fas fa-users"></i>
-                        <h4>2025 CHPC-SCC</h4>
-                        <p>HPC Team Mentor</p>
-                    </div>
+            <!-- CTA Card -->
+            <div class="bento hero-cta fade-up stagger-2">
+                <a href="#projects" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    View Projects
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i>
+                    Get in Touch
+                </a>
+            </div>
+
+            <!-- Tech Stack Card -->
+            <div class="bento hero-tech fade-up stagger-3">
+                <h3>Core Technologies</h3>
+                <div class="tech-tags">
+                    <span class="tech-tag">C/C++</span>
+                    <span class="tech-tag">CUDA</span>
+                    <span class="tech-tag">OpenMP</span>
+                    <span class="tech-tag">MPI</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">PyTorch</span>
+                    <span class="tech-tag">SDL2</span>
+                    <span class="tech-tag">ARM</span>
+                </div>
+            </div>
+
+            <!-- Award Highlight Card -->
+            <div class="bento hero-award fade-up stagger-4">
+                <div class="award-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="award-content">
+                    <h4>CHPC-SCC 2023</h4>
+                    <p>Best Male Performer in Africa</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Featured Projects</h2>
-            
-            <div class="project-categories">
-                <button class="category-btn active" data-category="all">All Projects</button>
-                <button class="category-btn" data-category="hpc">High Performance Computing</button>
-                <button class="category-btn" data-category="ml">Machine Learning & RL</button>
-                <button class="category-btn" data-category="aviation">Aviation & Aircraft</button>
-                <button class="category-btn" data-category="robotics">Robotics</button>
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">About <span>Me</span></h2>
+                <p class="section-subtitle">Computer Science Honours graduate with a passion for performance.</p>
+            </div>
+        </div>
+
+        <div class="about-grid">
+            <!-- Bio Card -->
+            <div class="bento about-bio fade-up">
+                <p>
+                    I'm a Computer Science Honours graduate from the University of the Witwatersrand 
+                    with a 4.0 GPA and Dean's List recognition. My work spans GPU-accelerated computing with CUDA, 
+                    parallel algorithm optimization, bare-metal systems programming, and physics simulations.
+                </p>
+                <p>
+                    Recognized as the best male performer in Africa at the 2023 CHPC Student Cluster Competition, 
+                    I thrive on challenging problems that require deep hardware understanding and algorithmic innovation. 
+                    Currently mentoring the 2025 CHPC team.
+                </p>
             </div>
 
-            <div class="projects-grid">
-                <!-- Work-Stealing Thread Pool -->
-                <div class="project-card" data-category="hpc systems">
-                    <div class="project-image">
-                        <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool">
-                        <div class="project-overlay">
-                            <a href="projects/work-stealing.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Work-Stealing Thread Pool</h3>
-                        <p>A lock-free, work-stealing thread pool for bare-metal Raspberry Pi using the Circle framework, based on the Chase-Lev deque algorithm.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>Bare-Metal</span>
-                            <span>ARM</span>
-                            <span>Lock-Free</span>
-                        </div>
-                    </div>
+            <!-- Education Card -->
+            <div class="bento about-edu fade-up stagger-1">
+                <div class="edu-item">
+                    <div class="edu-year">2024 - 2025</div>
+                    <div class="edu-degree">BSc Honours Computer Science</div>
+                    <div class="edu-school">Wits University • 4.0 GPA</div>
                 </div>
-
-                <!-- Aircraft Fault Detection -->
-                <div class="project-card" data-category="aviation ml">
-                    <div class="project-image">
-                        <img src="images/fabian-steven-velocitize-blueprint-eng.jpg" alt="Aircraft Fault Detection">
-                        <div class="project-overlay">
-                            <a href="projects/aircraft-fault-detection.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Aircraft Engine Fault Detection</h3>
-                        <p>Implemented a Dynamic Bayesian Network (DBN) with a Markov Random Field (MRF) to distinguish between mechanical degradation and sensor failures in aircraft engines.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>DBN</span>
-                            <span>MRF</span>
-                            <span>pgmpy</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CUDA Ray Tracing -->
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/raytracing.jpg" alt="CUDA Ray Tracing">
-                        <div class="project-overlay">
-                            <a href="projects/cuda-raytracing.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>GPU-Accelerated Ray Tracer</h3>
-                        <p>Built a physically-based ray tracer from scratch in C++ and accelerated it with CUDA, achieving a throughput of 14 billion rays per frame.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>CUDA</span>
-                            <span>Physically-Based Rendering</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Robust Quadruped RL -->
-                <div class="project-card" data-category="robotics ml">
-                    <div class="project-image">
-                        <img src="images/slam.jpg" alt="Robust Quadruped RL">
-                        <div class="project-overlay">
-                            <a href="projects/quadruped-rl.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Robust Quadruped Locomotion</h3>
-                        <p>Conducted a systematic ablation study comparing robustness methods (SR2L, DR) for quadruped locomotion, revealing that combining methods can create interference, not synergy.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>PPO</span>
-                            <span>MuJoCo</span>
-                            <span>SR2L</span>
-                            <span>Domain Randomization</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Matrix Multiplication -->
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/investment.jpg" alt="Matrix Multiplication">
-                        <div class="project-overlay">
-                            <a href="projects/matrix-multiplication.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Matrix Multiplication Algorithms</h3>
-                        <p>Implemented and benchmarked three matrix multiplication algorithms from CLRS: naive, recursive, and Strassen's. Analyzed performance trade-offs, including memory overhead effects.</p>
-                        <div class="project-tech">
-                            <span>C</span>
-                            <span>Algorithms</span>
-                            <span>Strassen's Algorithm</span>
-                            <span>Benchmarking</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Parallel KNN -->
-                <div class="project-card" data-category="hpc ml">
-                    <div class="project-image">
-                        <img src="images/knn.jpg" alt="Parallel KNN">
-                        <div class="project-overlay">
-                            <a href="projects/parallel-knn.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Parallel KNN & Federated Learning</h3>
-                        <p>Developed a parallel K-Nearest Neighbors (KNN) classifier using OpenMP, achieving significant speedup. Also explored Federated Learning to show its effectiveness on non-IID data.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>OpenMP</span>
-                            <span>KNN</span>
-                            <span>Federated Learning</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BST & Order-Statistic Trees -->
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/api.jpg" alt="BST & OS-Trees">
-                        <div class="project-overlay">
-                            <a href="projects/bst-os-tree.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>BST & Order-Statistic Trees</h3>
-                        <p>Implemented and analyzed Binary Search Trees (BST) and Order-Statistic Trees from scratch, following CLRS. Quantified the performance overhead of augmenting a data structure for rank queries.</p>
-                        <div class="project-tech">
-                            <span>C</span>
-                            <span>Data Structures</span>
-                            <span>CLRS</span>
-                            <span>Performance Analysis</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Crafter RL -->
-                <div class="project-card" data-category="ml robotics">
-                    <div class="project-image">
-                        <img src="images/crafter.jpg" alt="Crafter RL">
-                        <div class="project-overlay">
-                            <a href="projects/crafter-rl.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Crafter RL with Intrinsic Curiosity</h3>
-                        <p>Built and trained a PPO agent with an Intrinsic Curiosity Module (ICM) to solve the sparse-reward environment of Crafter, significantly improving the agent's score through better exploration.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>PPO</span>
-                            <span>ICM</span>
-                            <span>PyTorch</span>
-                            <span>RL</span>
-                        </div>
-                    </div>
+                <div class="edu-item">
+                    <div class="edu-year">2022 - 2024</div>
+                    <div class="edu-degree">BSc Computer Science</div>
+                    <div class="edu-school">Wits University</div>
                 </div>
             </div>
 
-            <div class="more-projects">
-                <a href="projects.html" class="btn btn-secondary">View All Projects</a>
+            <!-- Awards -->
+            <div class="about-awards fade-up stagger-2">
+                <div class="award-card">
+                    <i class="fas fa-trophy"></i>
+                    <h4>CHPC-SCC 2023</h4>
+                    <p>Best Male Performer</p>
+                </div>
+                <div class="award-card">
+                    <i class="fas fa-medal"></i>
+                    <h4>CHPC-SCC 2023</h4>
+                    <p>2nd Place Overall</p>
+                </div>
+                <div class="award-card">
+                    <i class="fas fa-award"></i>
+                    <h4>Afretec Summit</h4>
+                    <p>2nd Place Overall</p>
+                </div>
+                <div class="award-card">
+                    <i class="fas fa-users"></i>
+                    <h4>CHPC-SCC 2025</h4>
+                    <p>Team Mentor</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <p class="contact-subtitle">
-                I'm always interested in hearing about new opportunities and exciting projects. 
-                Feel free to reach out if you'd like to collaborate or just say hello!
-            </p>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <a href="mailto:anandpatel1221178@gmail.com">anandpatel1221178@gmail.com</a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fab fa-linkedin"></i>
-                        <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank">LinkedIn</a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fab fa-github"></i>
-                        <a href="https://github.com/anand1221178" target="_blank">GitHub</a>
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Featured <span>Projects</span></h2>
+                <p class="section-subtitle">A selection of my systems and HPC work.</p>
+            </div>
+        </div>
+
+        <div class="project-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="hpc">HPC</button>
+            <button class="filter-btn" data-filter="ml">Machine Learning</button>
+            <button class="filter-btn" data-filter="systems">Systems</button>
+            <button class="filter-btn" data-filter="physics">Physics</button>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Payload Drop - NEW & FEATURED -->
+            <article class="project-card featured fade-up" data-category="physics systems">
+                <div class="project-image">
+                    <img src="images/raytracing.jpg" alt="Payload Drop System" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/payload-drop.html" class="btn btn-primary">View Project</a>
                     </div>
                 </div>
-                <a href="mailto:anandpatel1221178@gmail.com" class="btn btn-primary">Send Message</a>
+                <div class="project-content">
+                    <span class="project-category">Physics Simulation</span>
+                    <h3>Payload Drop System</h3>
+                    <p>A real-time 2D ballistics simulation with RK4 numerical integration, quadratic drag physics, and an intelligent binary-search targeting system. Built in C with SDL2 visualization.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>SDL2</span>
+                        <span>GSL</span>
+                        <span>RK4</span>
+                        <span>Ballistics</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CUDA Ray Tracing -->
+            <article class="project-card fade-up" data-category="hpc">
+                <div class="project-image">
+                    <img src="images/raytracing.jpg" alt="CUDA Ray Tracing" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/cuda-raytracing.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">High Performance Computing</span>
+                    <h3>GPU-Accelerated Ray Tracer</h3>
+                    <p>Physically-based ray tracer achieving 187M rays/sec. Discovered that global memory outperforms constant memory by 29% due to latency-bound access patterns.</p>
+                    <div class="project-tech">
+                        <span>C++</span>
+                        <span>CUDA</span>
+                        <span>PBR</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Work-Stealing Thread Pool -->
+            <article class="project-card fade-up" data-category="systems hpc">
+                <div class="project-image">
+                    <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/work-stealing.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Bare-Metal Systems</span>
+                    <h3>Lock-Free Work-Stealing Thread Pool</h3>
+                    <p>Chase-Lev deque implementation for bare-metal Raspberry Pi 4. Uses atomic operations and memory barriers without OS support.</p>
+                    <div class="project-tech">
+                        <span>C++</span>
+                        <span>ARM</span>
+                        <span>Lock-Free</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Aircraft Fault Detection -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/fabian-steven-velocitize-blueprint-eng.jpg" alt="Aircraft Fault Detection" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/aircraft-fault-detection.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Machine Learning</span>
+                    <h3>Aircraft Engine Fault Detection</h3>
+                    <p>Dynamic Bayesian Network with Markov Random Field to distinguish mechanical degradation from sensor failures in aircraft engines.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>DBN</span>
+                        <span>MRF</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Quadruped RL -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/slam.jpg" alt="Quadruped RL" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/quadruped-rl.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Reinforcement Learning</span>
+                    <h3>Robust Quadruped Locomotion</h3>
+                    <p>Systematic ablation study of SR2L and Domain Randomization for quadruped robots. Found that combining methods can create interference.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>PPO</span>
+                        <span>MuJoCo</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Crafter RL -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/crafter.jpg" alt="Crafter RL" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/crafter-rl.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Reinforcement Learning</span>
+                    <h3>Crafter RL with Intrinsic Curiosity</h3>
+                    <p>PPO agent with Intrinsic Curiosity Module for sparse-reward exploration in the Crafter environment.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>PPO</span>
+                        <span>ICM</span>
+                        <span>PyTorch</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="projects-cta">
+            <a href="projects.html" class="btn btn-secondary">
+                <i class="fas fa-th-large"></i>
+                View All Projects
+            </a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Get in <span>Touch</span></h2>
+                <p class="section-subtitle">Interested in working together? Let's connect.</p>
+            </div>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-info">
+                <a href="mailto:anandpatel1221178@gmail.com" class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <span>anandpatel1221178@gmail.com</span>
+                </a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" class="contact-card">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
+                </a>
+                <a href="https://github.com/anand1221178" target="_blank" class="contact-card">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
+            <div class="contact-cta">
+                <h3>Let's build something fast.</h3>
+                <p>
+                    I'm currently looking for opportunities in systems programming, 
+                    HPC, and performance engineering. If you have a challenging problem 
+                    that needs solving, I'd love to hear about it.
+                </p>
+                <a href="mailto:anandpatel1221178@gmail.com" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Message
+                </a>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Anand. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://github.com/anand1221178" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:anandpatel1221178@gmail.com"><i class="fas fa-envelope"></i></a>
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. Built with pure HTML, CSS & JS.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
             </div>
         </div>
     </footer>

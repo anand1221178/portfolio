@@ -3,219 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Projects - Anand's Portfolio</title>
+    <meta name="description" content="All projects by Anand Patel - High Performance Computing, Systems Programming, Machine Learning, and Physics Simulations.">
+    <meta name="theme-color" content="#09090b">
+    <title>All Projects | Anand Patel</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="index.html">Anand</a>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="index.html#about">About</a>
+                <a href="index.html#projects">Projects</a>
+                <a href="index.html#contact">Contact</a>
             </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="index.html#home" class="nav-link">Home</a>
-                <a href="index.html#about" class="nav-link">About</a>
-                <a href="index.html#education" class="nav-link">Education</a>
-                <a href="index.html#projects" class="nav-link">Projects</a>
-                <a href="index.html#contact" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-toggle" id="nav-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
-    <section id="all-projects-hero" class="hero" style="min-height: 50vh; padding: 3rem 2rem;">
-        <div class="hero-content">
-            <h1 class="hero-title">All My Projects</h1>
-            <p class="hero-subtitle">A comprehensive look at my work and contributions.</p>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+    </div>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <h1>All <span style="color: var(--accent)">Projects</span></h1>
+        <p>A complete collection of my work in systems programming, HPC, machine learning, and physics simulations.</p>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects" style="padding-top: 40px;">
+        <div class="project-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="hpc">HPC</button>
+            <button class="filter-btn" data-filter="ml">Machine Learning</button>
+            <button class="filter-btn" data-filter="systems">Systems</button>
+            <button class="filter-btn" data-filter="physics">Physics</button>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Payload Drop -->
+            <article class="project-card fade-up" data-category="physics systems">
+                <div class="project-image">
+                    <img src="images/raytracing.jpg" alt="Payload Drop System" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/payload-drop.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Physics Simulation</span>
+                    <h3>Payload Drop System</h3>
+                    <p>Real-time 2D ballistics simulation with RK4 numerical integration, quadratic drag physics, and intelligent binary-search targeting.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>SDL2</span>
+                        <span>GSL</span>
+                        <span>RK4</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CUDA Ray Tracing -->
+            <article class="project-card fade-up" data-category="hpc">
+                <div class="project-image">
+                    <img src="images/raytracing.jpg" alt="CUDA Ray Tracing" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/cuda-raytracing.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">High Performance Computing</span>
+                    <h3>GPU-Accelerated Ray Tracer</h3>
+                    <p>Physically-based ray tracer achieving 187M rays/sec with CUDA. Memory hierarchy analysis revealed global memory outperforms constant by 29%.</p>
+                    <div class="project-tech">
+                        <span>C++</span>
+                        <span>CUDA</span>
+                        <span>PBR</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Work-Stealing Thread Pool -->
+            <article class="project-card fade-up" data-category="systems hpc">
+                <div class="project-image">
+                    <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/work-stealing.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Bare-Metal Systems</span>
+                    <h3>Lock-Free Work-Stealing Thread Pool</h3>
+                    <p>Chase-Lev deque for bare-metal Raspberry Pi 4. Lock-free synchronization using atomic operations and memory barriers.</p>
+                    <div class="project-tech">
+                        <span>C++</span>
+                        <span>ARM</span>
+                        <span>Lock-Free</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Aircraft Fault Detection -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/fabian-steven-velocitize-blueprint-eng.jpg" alt="Aircraft Fault Detection" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/aircraft-fault-detection.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Machine Learning</span>
+                    <h3>Aircraft Engine Fault Detection</h3>
+                    <p>Dynamic Bayesian Network with Markov Random Field to distinguish mechanical degradation from sensor failures.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>DBN</span>
+                        <span>MRF</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Quadruped RL -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/slam.jpg" alt="Quadruped RL" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/quadruped-rl.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Reinforcement Learning</span>
+                    <h3>Robust Quadruped Locomotion</h3>
+                    <p>Systematic ablation study of SR2L and Domain Randomization. Discovered method interference when combining approaches.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>PPO</span>
+                        <span>MuJoCo</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Crafter RL -->
+            <article class="project-card fade-up" data-category="ml">
+                <div class="project-image">
+                    <img src="images/crafter.jpg" alt="Crafter RL" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/crafter-rl.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Reinforcement Learning</span>
+                    <h3>Crafter RL with Intrinsic Curiosity</h3>
+                    <p>PPO agent with Intrinsic Curiosity Module for sparse-reward exploration in the Crafter environment.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>PPO</span>
+                        <span>ICM</span>
+                        <span>PyTorch</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Matrix Multiplication -->
+            <article class="project-card fade-up" data-category="hpc">
+                <div class="project-image">
+                    <img src="images/investment.jpg" alt="Matrix Multiplication" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/matrix-multiplication.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Algorithms</span>
+                    <h3>Matrix Multiplication Algorithms</h3>
+                    <p>Implemented and benchmarked naive, recursive, and Strassen's algorithms. Analyzed memory overhead trade-offs.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>Strassen</span>
+                        <span>CLRS</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Parallel KNN -->
+            <article class="project-card fade-up" data-category="hpc ml">
+                <div class="project-image">
+                    <img src="images/knn.jpg" alt="Parallel KNN" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/parallel-knn.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Parallel Computing</span>
+                    <h3>Parallel KNN & Federated Learning</h3>
+                    <p>OpenMP-parallelized KNN classifier with federated learning extension for non-IID data distributions.</p>
+                    <div class="project-tech">
+                        <span>C++</span>
+                        <span>OpenMP</span>
+                        <span>KNN</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- BST & OS Trees -->
+            <article class="project-card fade-up" data-category="hpc">
+                <div class="project-image">
+                    <img src="images/api.jpg" alt="BST & OS Trees" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/bst-os-tree.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Data Structures</span>
+                    <h3>BST & Order-Statistic Trees</h3>
+                    <p>CLRS implementations with performance analysis quantifying the overhead of augmented data structures.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>CLRS</span>
+                        <span>Analysis</span>
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 
-    <section id="all-projects-grid" class="projects">
-        <div class="container">
-            <h2 class="section-title">Explore All My Work</h2>
-            
-            <div class="project-categories">
-                <button class="category-btn active" data-category="all">All Projects</button>
-                <button class="category-btn" data-category="hpc">High Performance Computing</button>
-                <button class="category-btn" data-category="ml">Machine Learning & RL</button>
-                <button class="category-btn" data-category="aviation">Aviation & Aircraft</button>
-                <button class="category-btn" data-category="robotics">Robotics</button>
-            </div>
-
-            <div class="projects-grid">
-                <!-- Work-Stealing Thread Pool -->
-                <div class="project-card" data-category="hpc systems">
-                    <div class="project-image">
-                        <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool">
-                        <div class="project-overlay">
-                            <a href="projects/work-stealing.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Work-Stealing Thread Pool</h3>
-                        <p>A lock-free, work-stealing thread pool for bare-metal Raspberry Pi using the Circle framework, based on the Chase-Lev deque algorithm.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>Bare-Metal</span>
-                            <span>ARM</span>
-                            <span>Lock-Free</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project cards will be dynamically loaded here or hardcoded as needed -->
-                <!-- For now, we can copy the project cards from index.html or indicate they will be filled -->
-                <!-- Example of a project card (you'd repeat this for all projects) -->
-                <div class="project-card" data-category="aviation ml">
-                    <div class="project-image">
-                        <img src="images/fabian-steven-velocitize-blueprint-eng.jpg" alt="Aircraft Fault Detection">
-                        <div class="project-overlay">
-                            <a href="projects/aircraft-fault-detection.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Aircraft Engine Fault Detection</h3>
-                        <p>Implemented a Dynamic Bayesian Network (DBN) with a Markov Random Field (MRF) to distinguish between mechanical degradation and sensor failures in aircraft engines.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>DBN</span>
-                            <span>MRF</span>
-                            <span>pgmpy</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/raytracing.jpg" alt="CUDA Ray Tracing">
-                        <div class="project-overlay">
-                            <a href="projects/cuda-raytracing.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>GPU-Accelerated Ray Tracer</h3>
-                        <p>Built a physically-based ray tracer from scratch in C++ and accelerated it with CUDA, achieving a throughput of 14 billion rays per frame.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>CUDA</span>
-                            <span>Physically-Based Rendering</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="robotics ml">
-                    <div class="project-image">
-                        <img src="images/slam.jpg" alt="Robust Quadruped RL">
-                        <div class="project-overlay">
-                            <a href="projects/quadruped-rl.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Robust Quadruped Locomotion</h3>
-                        <p>Conducted a systematic ablation study comparing robustness methods (SR2L, DR) for quadruped locomotion, revealing that combining methods can create interference, not synergy.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>PPO</span>
-                            <span>MuJoCo</span>
-                            <span>SR2L</span>
-                            <span>Domain Randomization</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/investment.jpg" alt="Matrix Multiplication">
-                        <div class="project-overlay">
-                            <a href="projects/matrix-multiplication.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Matrix Multiplication Algorithms</h3>
-                        <p>Implemented and benchmarked three matrix multiplication algorithms from CLRS: naive, recursive, and Strassen's. Analyzed performance trade-offs, including memory overhead effects.</p>
-                        <div class="project-tech">
-                            <span>C</span>
-                            <span>Algorithms</span>
-                            <span>Strassen's Algorithm</span>
-                            <span>Benchmarking</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="hpc ml">
-                    <div class="project-image">
-                        <img src="images/knn.jpg" alt="Parallel KNN">
-                        <div class="project-overlay">
-                            <a href="projects/parallel-knn.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Parallel KNN & Federated Learning</h3>
-                        <p>Developed a parallel K-Nearest Neighbors (KNN) classifier using OpenMP, achieving significant speedup. Also explored Federated Learning to show its effectiveness on non-IID data.</p>
-                        <div class="project-tech">
-                            <span>C++</span>
-                            <span>OpenMP</span>
-                            <span>KNN</span>
-                            <span>Federated Learning</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="hpc">
-                    <div class="project-image">
-                        <img src="images/api.jpg" alt="BST & OS-Trees">
-                        <div class="project-overlay">
-                            <a href="projects/bst-os-tree.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>BST & Order-Statistic Trees</h3>
-                        <p>Implemented and analyzed Binary Search Trees (BST) and Order-Statistic Trees from scratch, following CLRS. Quantified the performance overhead of augmenting a data structure for rank queries.</p>
-                        <div class="project-tech">
-                            <span>C</span>
-                            <span>Data Structures</span>
-                            <span>CLRS</span>
-                            <span>Performance Analysis</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="ml robotics">
-                    <div class="project-image">
-                        <img src="images/crafter.jpg" alt="Crafter RL">
-                        <div class="project-overlay">
-                            <a href="projects/crafter-rl.html" class="btn-view">View Details</a>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Crafter RL with Intrinsic Curiosity</h3>
-                        <p>Built and trained a PPO agent with an Intrinsic Curiosity Module (ICM) to solve the sparse-reward environment of Crafter, significantly improving the agent's score through better exploration.</p>
-                        <div class="project-tech">
-                            <span>Python</span>
-                            <span>PPO</span>
-                            <span>ICM</span>
-                            <span>PyTorch</span>
-                            <span>RL</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Anand. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://github.com/anand1221178" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:anandpatel1221178@gmail.com"><i class="fas fa-envelope"></i></a>
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. Built with pure HTML, CSS & JS.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
             </div>
         </div>
     </footer>

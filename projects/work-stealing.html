@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Work-Stealing Thread Pool - Anand's Portfolio</title>
+    <meta name="description" content="Lock-Free Work-Stealing Thread Pool for Bare-Metal Raspberry Pi - A high-performance parallel task scheduler.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>Work-Stealing Thread Pool | Anand Patel</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/project.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="../index.html">Anand</a>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">
+                <a href="../index.html">Anand<span>.</span></a>
             </div>
-            <div class="nav-menu" id="nav-menu">
+            <div class="nav-links" id="nav-menu">
                 <a href="../index.html#home" class="nav-link">Home</a>
                 <a href="../index.html#about" class="nav-link">About</a>
                 <a href="../index.html#education" class="nav-link">Education</a>
                 <a href="../index.html#projects" class="nav-link">Projects</a>
                 <a href="../index.html#contact" class="nav-link">Contact</a>
             </div>
-            <div class="nav-toggle" id="nav-toggle">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
-            </div>
+            </button>
         </div>
     </nav>
 
+    <!-- Project Hero -->
     <section class="project-hero">
         <div class="container">
             <div class="breadcrumb">
@@ -49,12 +53,13 @@
         </div>
     </section>
 
+    <!-- Project Content -->
     <section class="project-content">
         <div class="container">
             <div class="content-grid">
                 <aside class="project-sidebar">
                     <div class="sidebar-section">
-                        <h3>Technologies Used</h3>
+                        <h3>Technologies</h3>
                         <div class="tech-stack">
                             <span class="tech-item">C++</span>
                             <span class="tech-item">ARM Assembly</span>
@@ -75,8 +80,12 @@
                                 <span class="stat-label">Synchronization</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">Raspberry Pi</span>
+                                <span class="stat-value">RPi 4</span>
                                 <span class="stat-label">Hardware</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">4 Cores</span>
+                                <span class="stat-label">ARM Cortex</span>
                             </div>
                         </div>
                     </div>
@@ -136,7 +145,7 @@
                             The core of the work-stealing scheduler is the lock-free deque. It provides a way for worker threads to efficiently manage their own task queues while allowing other threads to "steal" work when they become idle.
                         </p>
                         <pre><code class="language-cpp">// From workdeque.h
-template<typename T>
+template&lt;typename T&gt;
 class WorkDeque {
 public:
     // Pushes a task to the bottom of the deque (owner only)
@@ -148,11 +157,10 @@ public:
     // Steals a task from the top of the deque (thieves only)
     T steal();
 private:
-    std::atomic<size_t> top;
-    std.atomic<size_t> bottom;
-    std::vector<T> buffer;
-};
-</code></pre>
+    std::atomic&lt;size_t&gt; top;
+    std::atomic&lt;size_t&gt; bottom;
+    std::vector&lt;T&gt; buffer;
+};</code></pre>
 
                         <h3>2. Worker Thread</h3>
                         <p>
@@ -173,8 +181,7 @@ void Worker::run() {
             }
         }
     }
-}
-</code></pre>
+}</code></pre>
                     </div>
 
                     <div class="project-section">
@@ -183,8 +190,8 @@ void Worker::run() {
                             The entire implementation is lock-free, relying on atomic operations and memory barriers for thread safety.
                         </p>
                         <ul class="improvement-list">
-                            <li><strong>Atomic Operations:</strong> `__sync_fetch_and_add` and `__sync_bool_compare_and_swap` are used for all shared variable manipulations.</li>
-                            <li><strong>Memory Barriers:</strong> `DataMemBarrier()` is used to enforce memory ordering guarantees on the ARM architecture.</li>
+                            <li><strong>Atomic Operations:</strong> <code>__sync_fetch_and_add</code> and <code>__sync_bool_compare_and_swap</code> are used for all shared variable manipulations.</li>
+                            <li><strong>Memory Barriers:</strong> <code>DataMemBarrier()</code> is used to enforce memory ordering guarantees on the ARM architecture.</li>
                         </ul>
                     </div>
 
@@ -212,13 +219,20 @@ void Worker::run() {
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Anand. All rights reserved.</p>
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
             <div class="social-links">
-                <a href="https://github.com/anand1221178" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:anandpatel1221178@gmail.com"><i class="fas fa-envelope"></i></a>
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
             </div>
         </div>
     </footer>

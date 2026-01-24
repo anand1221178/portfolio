@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Payload Drop System - A real-time 2D ballistics simulation with RK4 integration and intelligent targeting.">
+    <meta name="theme-color" content="#09090b">
+    <title>Payload Drop System | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Payload Drop System</span>
+            </div>
+            <h1 class="project-title">Payload Drop System</h1>
+            <p class="project-subtitle">Real-time 2D ballistics simulation with intelligent targeting</p>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2025</span>
+                <span><i class="fas fa-tag"></i> Physics, Simulation, C</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Content -->
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">C11</span>
+                            <span class="tech-item">SDL2</span>
+                            <span class="tech-item">GSL</span>
+                            <span class="tech-item">Make</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Key Metrics</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">RK4</span>
+                                <span class="stat-label">Integration</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">1cm</span>
+                                <span class="stat-label">Accuracy</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">100Hz</span>
+                                <span class="stat-label">Physics</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">60fps</span>
+                                <span class="stat-label">Render</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="https://github.com/anand1221178/Payload-Drop" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> View Source
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Overview</h2>
+                        <p>
+                            A sophisticated 2D physics simulation that models a drone-based payload drop system. 
+                            The simulation features a drone flying at configurable altitude that must release a 
+                            small ball bearing (5g, 8mm diameter) to accurately hit a ground target. 
+                        </p>
+                        <p>
+                            The system implements realistic ballistic physics including gravity, quadratic air 
+                            resistance (drag), and wind effects, with an intelligent targeting system that 
+                            calculates optimal release points using binary search.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-calculator"></i>
+                                <h3>RK4 Integration</h3>
+                                <p>Runge-Kutta 4th order numerical integration using the GNU Scientific Library for accurate trajectory simulation.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-wind"></i>
+                                <h3>Realistic Physics</h3>
+                                <p>Quadratic drag model, configurable air density, wind forces, and terminal velocity calculations.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-crosshairs"></i>
+                                <h3>Smart Targeting</h3>
+                                <p>Binary search algorithm finds optimal release point with 1cm accuracy tolerance.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-tv"></i>
+                                <h3>Real-time Visualization</h3>
+                                <p>SDL2-based renderer at 1280x720 with trajectory prediction and statistics overlay.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Physics Implementation</h2>
+                        
+                        <h3>Drag Force Model</h3>
+                        <p>
+                            The simulation uses the standard quadratic drag equation for spherical objects:
+                        </p>
+                        <pre><code class="language-c">// Drag force calculation
+F_drag = 0.5 * rho * Cd * A * v^2
+
+// Where:
+// rho = 1.225 kg/m^3 (air density at sea level)
+// Cd  = 0.47 (sphere drag coefficient)
+// A   = pi * r^2 (cross-sectional area)
+// v   = velocity magnitude</code></pre>
+
+                        <h3>Numerical Integration</h3>
+                        <p>
+                            The RK4 integrator provides O(dt^4) global error compared to O(dt) for Euler integration. 
+                            This is critical for accurate long-range trajectory prediction.
+                        </p>
+                        <pre><code class="language-c">// RK4 integration step
+void rk4_step(state *s, double dt, physics_config *cfg) {
+    vec3 k1_v, k1_p, k2_v, k2_p, k3_v, k3_p, k4_v, k4_p;
+    
+    // k1 = f(t, y)
+    k1_v = compute_acceleration(s->pos, s->vel, cfg);
+    k1_p = s->vel;
+    
+    // k2 = f(t + dt/2, y + k1*dt/2)
+    // ... and so on for k3, k4
+    
+    // y_new = y + (dt/6) * (k1 + 2*k2 + 2*k3 + k4)
+}</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Targeting Algorithm</h2>
+                        <p>
+                            The targeting system uses binary search to find the optimal release point. 
+                            It simulates the projectile trajectory for candidate release points and 
+                            converges on the position that results in a hit within 1cm tolerance.
+                        </p>
+                        <div class="challenge-item">
+                            <h3><i class="fas fa-lightbulb"></i> Key Insight</h3>
+                            <p>
+                                The relationship between release position and impact point is monotonic 
+                                (earlier release = further impact), making binary search ideal. The algorithm 
+                                converges in O(log n) iterations where n is the precision requirement.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Specifications</h2>
+                        <div class="metrics-table">
+                            <table>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>Payload Mass</td>
+                                    <td>5g (0.005 kg)</td>
+                                </tr>
+                                <tr>
+                                    <td>Payload Diameter</td>
+                                    <td>8mm</td>
+                                </tr>
+                                <tr>
+                                    <td>Default Altitude</td>
+                                    <td>50m</td>
+                                </tr>
+                                <tr>
+                                    <td>Drone Speed</td>
+                                    <td>10 m/s</td>
+                                </tr>
+                                <tr>
+                                    <td>Terminal Velocity</td>
+                                    <td>~58.2 m/s</td>
+                                </tr>
+                                <tr>
+                                    <td>Physics Timestep</td>
+                                    <td>10ms (100Hz)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Testing & Validation</h2>
+                        <p>
+                            The physics engine is validated against analytical solutions for simple cases:
+                        </p>
+                        <ul class="improvement-list">
+                            <li><strong>Gravity-only:</strong> Impact time within 2% of analytical solution</li>
+                            <li><strong>Impact velocity:</strong> Within 1 m/s of expected value</li>
+                            <li><strong>Terminal velocity:</strong> Verified against theoretical calculation</li>
+                            <li><strong>Targeting accuracy:</strong> Consistently hits 1m diameter target from 50m</li>
+                        </ul>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="../index.html#projects" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> All Projects
+                        </a>
+                        <a href="cuda-raytracing.html" class="btn btn-primary">
+                            Next Project <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>
