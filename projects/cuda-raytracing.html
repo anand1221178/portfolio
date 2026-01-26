@@ -17,21 +17,26 @@
 <body>
     <nav class="nav">
         <div class="nav-inner">
-            <div class="nav-logo">
-                <a href="../index.html">Anand<span>.</span></a>
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#contact">Contact</a>
             </div>
-            <div class="nav-links" id="nav-menu">
-                <a href="../index.html#home" class="nav-link">Home</a>
-                <a href="../index.html#about" class="nav-link">About</a>
-                <a href="../index.html#education" class="nav-link">Education</a>
-                <a href="../index.html#projects" class="nav-link">Projects</a>
-                <a href="../index.html#contact" class="nav-link">Contact</a>
-            </div>
-            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
         </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
 
     <section class="project-hero">
         <div class="container">
@@ -222,12 +227,18 @@ __device__ bool intersect_bvh(...) {
     </section>
 
     <footer class="footer">
-        <div class="container">
+        <div class="footer-inner">
             <p>&copy; 2025 Anand Patel. All rights reserved.</p>
-            <div class="social-links">
-                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anand-patel1221/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
             </div>
         </div>
     </footer>

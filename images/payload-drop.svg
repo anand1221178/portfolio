@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117"/>
+      <stop offset="100%" style="stop-color:#18181b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#14b8a6"/>
+      <stop offset="100%" style="stop-color:#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="trail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  
+  <!-- Grid lines -->
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="0" y1="400" x2="800" y2="400"/>
+    <line x1="160" y1="0" x2="160" y2="500"/>
+    <line x1="320" y1="0" x2="320" y2="500"/>
+    <line x1="480" y1="0" x2="480" y2="500"/>
+    <line x1="640" y1="0" x2="640" y2="500"/>
+  </g>
+  
+  <!-- Ground -->
+  <rect x="0" y="420" width="800" height="80" fill="#1a1a2e" opacity="0.5"/>
+  <line x1="0" y1="420" x2="800" y2="420" stroke="#14b8a6" stroke-width="2" stroke-opacity="0.3"/>
+  
+  <!-- Target -->
+  <circle cx="550" cy="420" r="25" fill="none" stroke="#14b8a6" stroke-width="2" stroke-opacity="0.6"/>
+  <circle cx="550" cy="420" r="12" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="550" cy="420" r="4" fill="#14b8a6" opacity="0.8"/>
+  
+  <!-- Trajectory curve (parabolic arc) -->
+  <path d="M 200 140 Q 350 100 420 250 Q 470 350 550 420" 
+        fill="none" stroke="url(#trail)" stroke-width="2" stroke-dasharray="8,4"/>
+  
+  <!-- Predicted trajectory dots -->
+  <circle cx="280" cy="125" r="2" fill="#14b8a6" opacity="0.3"/>
+  <circle cx="330" cy="140" r="2" fill="#14b8a6" opacity="0.35"/>
+  <circle cx="370" cy="175" r="2" fill="#14b8a6" opacity="0.4"/>
+  <circle cx="400" cy="220" r="2" fill="#14b8a6" opacity="0.45"/>
+  <circle cx="425" cy="270" r="2" fill="#14b8a6" opacity="0.5"/>
+  <circle cx="450" cy="310" r="2" fill="#14b8a6" opacity="0.55"/>
+  <circle cx="480" cy="345" r="2" fill="#14b8a6" opacity="0.6"/>
+  <circle cx="510" cy="380" r="2" fill="#14b8a6" opacity="0.7"/>
+  <circle cx="535" cy="405" r="2" fill="#14b8a6" opacity="0.8"/>
+  
+  <!-- Drone body -->
+  <g transform="translate(200, 120)">
+    <!-- Drone frame -->
+    <rect x="-30" y="-8" width="60" height="16" rx="4" fill="#27272a" stroke="#3f3f46" stroke-width="1"/>
+    <!-- Arms -->
+    <line x1="-30" y1="0" x2="-50" y2="-15" stroke="#3f3f46" stroke-width="2"/>
+    <line x1="30" y1="0" x2="50" y2="-15" stroke="#3f3f46" stroke-width="2"/>
+    <!-- Rotors -->
+    <ellipse cx="-50" cy="-15" rx="18" ry="4" fill="none" stroke="#14b8a6" stroke-width="1.5" opacity="0.6"/>
+    <ellipse cx="50" cy="-15" rx="18" ry="4" fill="none" stroke="#14b8a6" stroke-width="1.5" opacity="0.6"/>
+    <!-- Payload -->
+    <circle cx="0" cy="16" r="5" fill="#2dd4bf" opacity="0.9"/>
+  </g>
+  
+  <!-- Arrow showing direction -->
+  <line x1="250" y1="120" x2="290" y2="120" stroke="#14b8a6" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="290,116 298,120 290,124" fill="#14b8a6" opacity="0.5"/>
+  
+  <!-- Labels -->
+  <text x="40" y="40" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#fafafa" opacity="0.9">Payload Drop</text>
+  <text x="40" y="65" font-family="Inter, sans-serif" font-size="13" fill="#a1a1aa">Ballistics Simulation &bull; RK4 Integration &bull; Smart Targeting</text>
+  
+  <!-- Physics formula -->
+  <text x="620" y="80" font-family="monospace" font-size="11" fill="#14b8a6" opacity="0.5">F = ½ρCdAv²</text>
+  
+  <!-- Wind indicator -->
+  <g transform="translate(680, 200)">
+    <text x="0" y="-10" font-family="Inter, sans-serif" font-size="10" fill="#71717a" text-anchor="middle">WIND</text>
+    <line x1="-15" y1="0" x2="15" y2="0" stroke="#71717a" stroke-width="1.5"/>
+    <polygon points="15,-3 20,0 15,3" fill="#71717a"/>
+  </g>
+</svg>
