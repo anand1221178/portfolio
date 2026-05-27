@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="All projects by Anand Patel - High Performance Computing, Systems Programming, Machine Learning, and Physics Simulations.">
-    <meta name="theme-color" content="#09090b">
+    <meta name="description" content="All projects by Anand Patel - Systems Programming, HPC, Kernel Development, GPU Computing, and Machine Learning.">
+    <meta name="theme-color" content="#0a0a0a">
     <title>All Projects | Anand Patel</title>
-    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner">
-            <a href="index.html" class="nav-logo">Anand<span>.</span></a>
+            <a href="index.html" class="nav-logo">anand<span class="accent">_</span>patel</a>
             <div class="nav-links">
-                <a href="index.html#about">About</a>
-                <a href="index.html#projects">Projects</a>
-                <a href="index.html#contact">Contact</a>
+                <a href="index.html#about">about</a>
+                <a href="index.html#projects">projects</a>
+                <a href="index.html#publications">papers</a>
+                <a href="index.html#blog">blog</a>
+                <a href="index.html#contact">contact</a>
             </div>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
                 <span></span>
@@ -32,272 +33,201 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html#about">About</a>
-        <a href="index.html#projects">Projects</a>
-        <a href="index.html#contact">Contact</a>
+        <a href="index.html#about">about</a>
+        <a href="index.html#projects">projects</a>
+        <a href="index.html#publications">papers</a>
+        <a href="index.html#blog">blog</a>
+        <a href="index.html#contact">contact</a>
     </div>
 
     <!-- Page Hero -->
     <section class="page-hero">
-        <h1>All <span style="color: var(--accent)">Projects</span></h1>
-        <p>A complete collection of my work in systems programming, HPC, machine learning, and physics simulations.</p>
+        <h1>All <span class="accent">Projects</span></h1>
+        <p>Systems programming, HPC, kernel development, GPU computing, and machine learning.</p>
     </section>
 
-    <!-- Projects Section -->
-    <section class="projects" style="padding-top: 40px;">
-        <div class="project-filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="hpc">HPC</button>
-            <button class="filter-btn" data-filter="ml">Machine Learning</button>
-            <button class="filter-btn" data-filter="systems">Systems</button>
-            <button class="filter-btn" data-filter="networking">Networking</button>
-            <button class="filter-btn" data-filter="physics">Physics</button>
-        </div>
+    <!-- Projects -->
+    <section class="projects-section" style="padding-top: 40px;">
+        <div class="container">
+            <div class="project-filters">
+                <button class="filter-btn active" data-filter="all">all</button>
+                <button class="filter-btn" data-filter="systems">systems</button>
+                <button class="filter-btn" data-filter="hpc">hpc</button>
+                <button class="filter-btn" data-filter="networking">networking</button>
+                <button class="filter-btn" data-filter="ml">ml</button>
+                <button class="filter-btn" data-filter="physics">physics</button>
+            </div>
 
-        <div class="projects-grid">
-            <!-- TopoSteal -->
-            <article class="project-card fade-up" data-category="systems hpc">
-                <div class="project-image">
-                    <img src="images/numa.png" alt="TopoSteal" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/toposteal.html" class="btn btn-primary">View Project</a>
+            <div class="projects-grid">
+                <!-- TopoSteal -->
+                <article class="project-card fade-up" data-category="systems hpc">
+                    <div class="project-header">
+                        <span class="project-tag">HPC / Systems</span>
+                        <span class="project-year">2026</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">HPC / Systems</span>
-                    <h3>TopoSteal: NUMA-Aware Work-Stealing Runtime</h3>
-                    <p>Topology-aware scheduler using hwloc + PMU feedback. 1.17x speedup, 85% local steals, beats OpenMP on SpMV (SuiteSparse audikw_1).</p>
+                    <h3><a href="projects/toposteal.html">TopoSteal: NUMA-Aware Work-Stealing Runtime</a></h3>
+                    <p>Topology-aware scheduler using hwloc + PMU feedback. Lock-free Chase-Lev deques with C11 atomics.</p>
+                    <div class="project-metrics">
+                        <span class="metric"><strong>1.17x</strong> speedup</span>
+                        <span class="metric"><strong>85%</strong> local steals</span>
+                    </div>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>hwloc</span>
-                        <span>perf_event_open</span>
-                        <span>NUMA</span>
+                        <span>C</span><span>hwloc</span><span>perf_event_open</span><span>NUMA</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- eBPF/XDP ITCH Parser -->
-            <article class="project-card fade-up" data-category="systems networking">
-                <div class="project-image">
-                    <img src="images/XDP.webp" alt="XDP-ITCH Parser" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/xdp-itch.html" class="btn btn-primary">View Project</a>
+                <!-- XDP-ITCH -->
+                <article class="project-card fade-up" data-category="systems networking">
+                    <div class="project-header">
+                        <span class="project-tag">Kernel / HFT</span>
+                        <span class="project-year">2026</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Kernel Networking / HFT</span>
-                    <h3>eBPF/XDP ITCH Market Data Parser</h3>
-                    <p>Sub-microsecond NASDAQ ITCH 5.0 parsing in the kernel via XDP. 930 ns/packet with BPF ring buffer delivery to a live order book.</p>
+                    <h3><a href="projects/xdp-itch.html">eBPF/XDP ITCH Market Data Parser</a></h3>
+                    <p>Sub-microsecond NASDAQ ITCH 5.0 parsing at the NIC driver level via XDP.</p>
+                    <div class="project-metrics">
+                        <span class="metric"><strong>930ns</strong> per packet</span>
+                        <span class="metric"><strong>500K+</strong> packets</span>
+                    </div>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>eBPF</span>
-                        <span>XDP</span>
-                        <span>C++</span>
+                        <span>C</span><span>eBPF</span><span>XDP</span><span>C++</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Sentinel RTOS -->
-            <article class="project-card fade-up" data-category="systems">
-                <div class="project-image">
-                    <img src="images/rtos.png" alt="Sentinel RTOS" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/sentinel-rtos.html" class="btn btn-primary">View Project</a>
+                <!-- Sentinel RTOS -->
+                <article class="project-card fade-up" data-category="systems">
+                    <div class="project-header">
+                        <span class="project-tag">Embedded</span>
+                        <span class="project-year">2026</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Embedded Systems</span>
-                    <h3>Sentinel RTOS: Bare-Metal Real-Time OS</h3>
-                    <p>Preemptive RTOS from scratch on STM32F401RE. Priority inheritance, PendSV context switching in ARM assembly, 6 bare-metal drivers.</p>
+                    <h3><a href="projects/sentinel-rtos.html">Sentinel RTOS: Bare-Metal Real-Time OS</a></h3>
+                    <p>Preemptive RTOS from scratch on STM32F401RE. No HAL, no FreeRTOS.</p>
+                    <div class="project-metrics">
+                        <span class="metric"><strong>6</strong> bare-metal drivers</span>
+                    </div>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>ARM Assembly</span>
-                        <span>STM32</span>
-                        <span>Bare-Metal</span>
+                        <span>C</span><span>ARM Assembly</span><span>STM32</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Payload Drop -->
-            <article class="project-card fade-up" data-category="physics systems">
-                <div class="project-image">
-                    <img src="images/payload-drop.svg" alt="Payload Drop System" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/payload-drop.html" class="btn btn-primary">View Project</a>
+                <!-- Payload Drop -->
+                <article class="project-card fade-up" data-category="physics systems">
+                    <div class="project-header">
+                        <span class="project-tag">Physics Simulation</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Physics Simulation</span>
-                    <h3>Payload Drop System</h3>
-                    <p>Real-time 2D ballistics simulation with RK4 numerical integration, quadratic drag physics, and intelligent binary-search targeting.</p>
+                    <h3><a href="projects/payload-drop.html">Payload Drop System</a></h3>
+                    <p>Real-time 2D ballistics simulation with RK4 numerical integration and quadratic drag physics.</p>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>SDL2</span>
-                        <span>GSL</span>
-                        <span>RK4</span>
+                        <span>C</span><span>SDL2</span><span>GSL</span><span>RK4</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- CUDA Ray Tracing -->
-            <article class="project-card fade-up" data-category="hpc">
-                <div class="project-image">
-                    <img src="images/raytracing.jpg" alt="CUDA Ray Tracing" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/cuda-raytracing.html" class="btn btn-primary">View Project</a>
+                <!-- CUDA Ray Tracer -->
+                <article class="project-card fade-up" data-category="hpc">
+                    <div class="project-header">
+                        <span class="project-tag">GPU Computing</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">High Performance Computing</span>
-                    <h3>GPU-Accelerated Ray Tracer</h3>
-                    <p>Physically-based ray tracer achieving 187M rays/sec with CUDA. Memory hierarchy analysis revealed global memory outperforms constant by 29%.</p>
+                    <h3><a href="projects/cuda-raytracing.html">CUDA Ray Tracer</a></h3>
+                    <p>Physically-based ray tracer on GPU with warp-level parallelism and shared memory tiling.</p>
+                    <div class="project-metrics">
+                        <span class="metric"><strong>187M</strong> rays/sec</span>
+                    </div>
                     <div class="project-tech">
-                        <span>C++</span>
-                        <span>CUDA</span>
-                        <span>PBR</span>
+                        <span>CUDA</span><span>C++</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Old work-stealing replaced by TopoSteal above -->
-
-            <!-- Aircraft Fault Detection -->
-            <article class="project-card fade-up" data-category="ml">
-                <div class="project-image">
-                    <img src="images/fabian-steven-velocitize-blueprint-eng.jpg" alt="Aircraft Fault Detection" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/aircraft-fault-detection.html" class="btn btn-primary">View Project</a>
+                <!-- Aircraft Fault Detection -->
+                <article class="project-card fade-up" data-category="ml">
+                    <div class="project-header">
+                        <span class="project-tag">Machine Learning</span>
+                        <span class="project-year">2025</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Machine Learning</span>
-                    <h3>Aircraft Engine Fault Detection</h3>
-                    <p>Dynamic Bayesian Network with Markov Random Field to distinguish mechanical degradation from sensor failures.</p>
+                    <h3><a href="projects/aircraft-fault-detection.html">Aircraft Engine Fault Detection</a></h3>
+                    <p>Dynamic Bayesian Network with Markov Random Field for mechanical degradation vs sensor failures.</p>
                     <div class="project-tech">
-                        <span>Python</span>
-                        <span>DBN</span>
-                        <span>MRF</span>
+                        <span>Python</span><span>DBN</span><span>MRF</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Quadruped RL -->
-            <article class="project-card fade-up" data-category="ml">
-                <div class="project-image">
-                    <img src="images/slam.jpg" alt="Quadruped RL" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/quadruped-rl.html" class="btn btn-primary">View Project</a>
+                <!-- Quadruped RL -->
+                <article class="project-card fade-up" data-category="ml">
+                    <div class="project-header">
+                        <span class="project-tag">RL / Honours Thesis</span>
+                        <span class="project-year">2025</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Reinforcement Learning</span>
-                    <h3>Robust Quadruped Locomotion</h3>
-                    <p>Systematic ablation study of SR2L and Domain Randomization. Discovered method interference when combining approaches.</p>
+                    <h3><a href="projects/quadruped-rl.html">Autonomous Robotic Failure Recovery</a></h3>
+                    <p>RL policy for quadruped locomotion under joint failures. Most Innovative Research 2025.</p>
+                    <div class="project-metrics">
+                        <span class="metric"><strong>38K</strong> eval episodes</span>
+                    </div>
                     <div class="project-tech">
-                        <span>Python</span>
-                        <span>PPO</span>
-                        <span>MuJoCo</span>
+                        <span>Python</span><span>PPO</span><span>MuJoCo</span><span>PyTorch</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Crafter RL -->
-            <article class="project-card fade-up" data-category="ml">
-                <div class="project-image">
-                    <img src="images/crafter.jpg" alt="Crafter RL" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/crafter-rl.html" class="btn btn-primary">View Project</a>
+                <!-- Crafter RL -->
+                <article class="project-card fade-up" data-category="ml">
+                    <div class="project-header">
+                        <span class="project-tag">Reinforcement Learning</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Reinforcement Learning</span>
-                    <h3>Crafter RL with Intrinsic Curiosity</h3>
-                    <p>PPO agent with Intrinsic Curiosity Module for sparse-reward exploration in the Crafter environment.</p>
+                    <h3><a href="projects/crafter-rl.html">Crafter RL with Intrinsic Curiosity</a></h3>
+                    <p>PPO agent with ICM for sparse-reward exploration in Crafter.</p>
                     <div class="project-tech">
-                        <span>Python</span>
-                        <span>PPO</span>
-                        <span>ICM</span>
-                        <span>PyTorch</span>
+                        <span>Python</span><span>PPO</span><span>ICM</span><span>PyTorch</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Matrix Multiplication -->
-            <article class="project-card fade-up" data-category="hpc">
-                <div class="project-image">
-                    <img src="images/investment.jpg" alt="Matrix Multiplication" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/matrix-multiplication.html" class="btn btn-primary">View Project</a>
+                <!-- Matrix Multiplication -->
+                <article class="project-card fade-up" data-category="hpc">
+                    <div class="project-header">
+                        <span class="project-tag">Algorithms</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Algorithms</span>
-                    <h3>Matrix Multiplication Algorithms</h3>
-                    <p>Implemented and benchmarked naive, recursive, and Strassen's algorithms. Analyzed memory overhead trade-offs.</p>
+                    <h3><a href="projects/matrix-multiplication.html">Matrix Multiplication Algorithms</a></h3>
+                    <p>Naive, recursive, and Strassen's from CLRS. Benchmarked memory overhead trade-offs.</p>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>Strassen</span>
-                        <span>CLRS</span>
+                        <span>C</span><span>Strassen</span><span>CLRS</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Parallel KNN -->
-            <article class="project-card fade-up" data-category="hpc ml">
-                <div class="project-image">
-                    <img src="images/knn.jpg" alt="Parallel KNN" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/parallel-knn.html" class="btn btn-primary">View Project</a>
+                <!-- Parallel KNN -->
+                <article class="project-card fade-up" data-category="hpc ml">
+                    <div class="project-header">
+                        <span class="project-tag">Parallel Computing</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Parallel Computing</span>
-                    <h3>Parallel KNN & Federated Learning</h3>
-                    <p>OpenMP-parallelized KNN classifier with federated learning extension for non-IID data distributions.</p>
+                    <h3><a href="projects/parallel-knn.html">Parallel KNN &amp; Federated Learning</a></h3>
+                    <p>OpenMP-parallelized KNN classifier with federated learning for non-IID data.</p>
                     <div class="project-tech">
-                        <span>C++</span>
-                        <span>OpenMP</span>
-                        <span>KNN</span>
+                        <span>C++</span><span>OpenMP</span><span>KNN</span>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- BST & OS Trees -->
-            <article class="project-card fade-up" data-category="hpc">
-                <div class="project-image">
-                    <img src="images/api.jpg" alt="BST & OS Trees" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/bst-os-tree.html" class="btn btn-primary">View Project</a>
+                <!-- BST & OS Trees -->
+                <article class="project-card fade-up" data-category="hpc">
+                    <div class="project-header">
+                        <span class="project-tag">Data Structures</span>
+                        <span class="project-year">2024</span>
                     </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Data Structures</span>
-                    <h3>BST & Order-Statistic Trees</h3>
-                    <p>CLRS implementations with performance analysis quantifying the overhead of augmented data structures.</p>
+                    <h3><a href="projects/bst-os-tree.html">BST &amp; Order-Statistic Trees</a></h3>
+                    <p>CLRS implementations with performance analysis of augmented data structure overhead.</p>
                     <div class="project-tech">
-                        <span>C</span>
-                        <span>CLRS</span>
-                        <span>Analysis</span>
+                        <span>C</span><span>CLRS</span><span>Analysis</span>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-inner">
-            <p>&copy; 2025 Anand Patel. Built with pure HTML, CSS & JS.</p>
-            <div class="footer-links">
-                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
+        <div class="container">
+            <div class="footer-inner">
+                <p>&copy; 2025 Anand Patel</p>
+                <p class="footer-note">Built with vanilla HTML, CSS &amp; JS.</p>
             </div>
         </div>
     </footer>
