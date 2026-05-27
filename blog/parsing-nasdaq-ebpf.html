@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="description" content="Parsing NASDAQ at 930ns with eBPF/XDP - Building a kernel-level market data feed handler.">
+    <meta name="description" content="Parsing NASDAQ at 930ns with eBPF/XDP - The real story of building a kernel-level market data feed handler.">
     <meta name="theme-color" content="#0a0a0b">
     <title>Parsing NASDAQ at 930ns | Anand Patel</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -49,7 +49,7 @@
             <div class="project-meta">
                 <span><i class="fas fa-calendar"></i> May 2026</span>
                 <span><i class="fas fa-tag"></i> eBPF, HFT, Kernel Networking</span>
-                <span><i class="fas fa-clock"></i> 10 min read</span>
+                <span><i class="fas fa-clock"></i> 12 min read</span>
             </div>
         </div>
     </section>
@@ -81,8 +81,8 @@
                                 <span class="stat-label">Packets</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">5</span>
-                                <span class="stat-label">Protocol Layers</span>
+                                <span class="stat-value">1 week</span>
+                                <span class="stat-label">Learning XDP</span>
                             </div>
                         </div>
                     </div>
@@ -90,65 +90,91 @@
 
                 <main class="project-main">
                     <div class="project-section">
-                        <h2>The Latency Tax of recv()</h2>
+                        <h2>Step Zero: Read the Spec Before Writing a Line of Code</h2>
                         <p>
-                            Here's how a traditional market data feed handler works: a UDP packet arrives at the NIC, travels up through the kernel network stack (sk_buff allocation, protocol processing, socket buffer), your application calls <code>recv()</code> (syscall overhead, context switch), copies the data to userspace, then finally parses the ITCH protocol and updates the order book.
+                            Before I touched any code, I spent time reading two specifications cover to cover: the MoldUDP64 transport protocol spec (~5 pages) and the NASDAQ ITCH 5.0 message format spec (Section 4, message formats). This sounds obvious, but it's the step most people skip. I almost skipped it too.
                         </p>
                         <p>
-                            Every step adds latency. The <code>recv()</code> syscall alone is 1-2 microseconds. Buffer copies add more. For high-frequency trading, where you're racing other firms to react to market data, every microsecond matters.
+                            MoldUDP64 is the wrapper NASDAQ uses to multiplex ITCH messages into UDP packets. The header is 20 bytes: 10-byte session ID, 8-byte sequence number, 2-byte message count. After that, each ITCH message is prefixed with a 2-byte length field. A single UDP packet can carry multiple ITCH messages. This detail matters enormously for the XDP parser &mdash; more on that later.
                         </p>
                         <p>
-                            The question I wanted to answer: what if you could parse the market data <em>before</em> it reaches userspace?
-                        </p>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>XDP: Processing Packets at the NIC Driver</h2>
-                        <p>
-                            XDP (eXpress Data Path) is a hook in the Linux kernel that runs an eBPF program at the earliest possible point in the network stack &mdash; right in the NIC driver, before the kernel even allocates an sk_buff. Your program gets a raw pointer to the packet data and can inspect, modify, redirect, or drop the packet.
-                        </p>
-                        <p>
-                            The catch: eBPF programs must be provably safe. The BPF verifier statically analyzes every possible execution path to ensure you never dereference an out-of-bounds pointer, never loop forever, and never access kernel memory you shouldn't. This is not a suggestion &mdash; if the verifier rejects your program, it doesn't load.
+                            The ITCH Add Order message ('A') is 36 bytes. The key insight from the spec: <strong>Stock Locate</strong> (offset +1, 2 bytes) is a daily integer index for each symbol. It's meant to be used as an array key, not the 8-byte ASCII stock name. This became my BPF hash map key &mdash; a <code>u16</code> lookup instead of an 8-byte string compare.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>Parsing 5 Protocol Layers in eBPF</h2>
+                        <h2>Week One: Learning XDP the Hard Way</h2>
                         <p>
-                            NASDAQ market data arrives as: <strong>Ethernet &rarr; IPv4 &rarr; UDP &rarr; MoldUDP64 &rarr; ITCH 5.0</strong>. Each layer has a variable-length header that must be parsed and bounds-checked before accessing the next.
+                            I knew nothing about eBPF when I started. I worked through the <a href="https://github.com/xdp-project/xdp-tutorial" target="_blank">xdp-tutorial</a> exercises: packet01 (parsing Ethernet/IP/UDP headers), packet02 (bounds checking patterns), and packet03 (XDP_PASS/XDP_DROP logic). This took a full week.
                         </p>
                         <p>
-                            I used a cursor-based parser: a <code>struct hdr_cursor</code> that tracks the current position in the packet. Each parse function advances the cursor past its header and returns the next protocol type. At every step, a bounds check satisfies the verifier.
+                            Early on, I thought the BPF verifier did "static analysis at compile time." Wrong. The verifier runs <strong>at load time</strong> &mdash; when you load the eBPF bytecode into the kernel, not when clang compiles it. So you can have code that compiles perfectly but gets rejected by the kernel. Two separate gatekeepers:
                         </p>
-                        <pre><code class="language-c">// Each layer: bounds check, parse, advance cursor
-static __always_inline int parse_ethhdr(
-    struct hdr_cursor *nh, void *data_end,
-    struct ethhdr **ethhdr)
-{
-    struct ethhdr *eth = nh-&gt;pos;
-    if (eth + 1 &gt; data_end)      // verifier needs this
-        return -1;
-    nh-&gt;pos = eth + 1;           // advance past ethernet
-    *ethhdr = eth;
-    return eth-&gt;h_proto;         // tells us: IPv4? IPv6?
+                        <pre><code class="language-c">clang compiles your C    -->  produces eBPF bytecode (.o file)
+                                       |
+you load it into kernel  -->  VERIFIER RUNS HERE (once, at load time)
+                                       |
+packet arrives           -->  already-verified program executes, full speed</code></pre>
+                        <p>
+                            This is why eBPF is both fast <em>and</em> safe. The verifier does all the hard work once upfront &mdash; proves your program can't crash the kernel, can't loop forever, always bounds-checks memory &mdash; and then gets out of the way forever. At packet time, there's no VM interpretation either: the JIT compiles eBPF bytecode to native x86 instructions.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Parsing Chain I Almost Got Wrong</h2>
+                        <p>
+                            After the tutorials, I tried to explain the full packet journey and wrote:
+                        </p>
+                        <p style="padding: 15px; background: var(--bg-card); border-radius: 8px; border-left: 3px solid #EF5350;">
+                            <em>"Ethernet &rarr; IP &rarr; UDP &rarr; ITCH message"</em>
+                        </p>
+                        <p>
+                            Missing a layer. Between UDP and ITCH sits <strong>MoldUDP64</strong>. After the UDP header, you're not staring at an ITCH message &mdash; you're staring at a MoldUDP64 packet containing potentially <em>multiple</em> ITCH messages, each length-prefixed. Skip this layer and you parse garbage.
+                        </p>
+                        <p>
+                            The corrected memory map from the UDP payload:
+                        </p>
+                        <pre><code class="language-c">UDP Payload:
+[+0  - +9 ]  MoldUDP64 Session        (10 bytes, skip)
+[+10 - +17]  MoldUDP64 Sequence Num   (8 bytes,  skip)
+[+18 - +19]  MoldUDP64 Message Count  (2 bytes,  READ)
+[+20 - +21]  Message Block Length     (2 bytes,  READ)
+[+22]        ITCH Message Type        (1 byte,   BRANCH POINT)</code></pre>
+                        <p>
+                            At byte +22 you read one character &mdash; <code>'A'</code>, <code>'D'</code>, <code>'E'</code> &mdash; and that tells you which ITCH message you're holding and how to parse the rest.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Verifier's Loop Problem</h2>
+                        <p>
+                            MoldUDP64's Message Count says there are N messages in this packet. My first instinct: <code>while(messages_remaining--)</code>. The verifier rejected it instantly.
+                        </p>
+                        <p>
+                            The verifier can't prove termination of a loop bounded by packet data &mdash; an attacker could put any value in Message Count. The solution: a <strong>fixed compile-time bound</strong> with an early break:
+                        </p>
+                        <pre><code class="language-c">#define MAX_ITCH_MESSAGES 64
+
+for (int i = 0; i &lt; MAX_ITCH_MESSAGES; i++) {
+    if (i &gt;= msg_count) break;  // runtime exit
+    // parse message...
 }</code></pre>
                         <p>
-                            The tricky part is MoldUDP64. It's NASDAQ's transport protocol that multiplexes multiple ITCH messages into a single UDP packet. Each message is prefixed with a 2-byte length field. I iterate through messages with a bounded loop (<code>MAX_ITCH_MESSAGES=64</code>) because the BPF verifier doesn't allow unbounded loops.
+                            The verifier sees 64 iterations maximum &mdash; provably finite. The <code>break</code> handles the actual count at runtime. This pattern shows up everywhere in eBPF: fixed bounds to satisfy the verifier, runtime checks for actual logic.
                         </p>
                     </div>
 
                     <div class="project-section">
                         <h2>In-Kernel Symbol Filtering</h2>
                         <p>
-                            NASDAQ sends data for every listed stock. A trading firm typically only cares about a few hundred symbols. In a traditional architecture, every packet reaches userspace and gets filtered there &mdash; wasting CPU cycles on irrelevant data.
+                            NASDAQ sends data for every listed stock. A trading firm only cares about a few hundred. In a traditional architecture, every packet reaches userspace and gets filtered there &mdash; wasting cycles on irrelevant data.
                         </p>
                         <p>
-                            In XDP, I use a BPF hash map populated from userspace with the <code>stock_locate</code> codes of symbols we care about. When an ITCH Add Order message is parsed, I check the hash map. If the symbol isn't tracked, the message is silently dropped &mdash; it never leaves the kernel, never wakes userspace, never consumes a ring buffer slot.
+                            In XDP, I populate a BPF hash map from userspace with the <code>stock_locate</code> codes I care about. When an ITCH message is parsed, I look up the Stock Locate. If it's not tracked, the message never leaves the kernel:
                         </p>
                         <pre><code class="language-c">__u16 stock_loc = bpf_ntohs(itch_msg-&gt;stock_locate);
 __u8 *track = bpf_map_lookup_elem(&amp;stock_filter, &amp;stock_loc);
 if (track &amp;&amp; *track == 1) {
-    // This stock matters - push to ring buffer
     void *slot = bpf_ringbuf_reserve(&amp;itch_ringbuf,
         sizeof(struct itch_add_order), 0);
     if (slot) {
@@ -157,50 +183,64 @@ if (track &amp;&amp; *track == 1) {
         bpf_ringbuf_submit(slot, 0);
     }
 }
-// Else: silently dropped. Userspace never knows.</code></pre>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>The Order Book</h2>
+// No match? Silently dropped. Userspace never knows.</code></pre>
                         <p>
-                            On the userspace side, a C++ order book consumes messages from the BPF ring buffer. It's a price-level aggregated book using <code>std::map</code> (sorted by price) with an <code>std::unordered_map</code> for O(1) order lookup by reference number. Handles Add, Execute, and Delete messages and maintains a live best bid/ask spread.
-                        </p>
-                        <p>
-                            The C++ book is wrapped in <code>extern "C"</code> functions so the C-based eBPF reader can call it without a C++ runtime dependency in the loader. A small detail, but the kind of thing that matters when you're mixing kernel C with userspace C++.
+                            The <code>bpf_ntohs()</code> is critical &mdash; all ITCH integers are big-endian (network byte order) and x86 is little-endian. Miss one byte-swap and your prices are garbage. I learned this the hard way.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>The Result: 930 Nanoseconds</h2>
+                        <h2>The Benchmark Script That Broke Twice</h2>
                         <p>
-                            I measured latency using <code>bpftool prog show</code>, which reports the kernel's own measurement of total CPU time spent in the eBPF program divided by invocation count. Across 500K+ packets:
-                        </p>
-                        <p style="font-size: 1.4em; text-align: center; padding: 20px 0; color: var(--accent);">
-                            <strong>Average latency: 930 nanoseconds per packet</strong>
+                            The first version of the benchmark script had two bugs that perfectly illustrate the kind of system-level thinking this project demands.
                         </p>
                         <p>
-                            That's sub-microsecond parsing of 5 protocol layers, symbol filtering via hash map lookup, and zero-copy delivery to userspace via ring buffer. All within the NIC driver, before the kernel network stack even sees the packet.
+                            <strong>Bug 1: Reading stats from a dead program.</strong> The script sent <code>SIGINT</code> to the eBPF reader (which detaches from the NIC and unloads the program), then asked <code>bpftool</code> for the stats. But the program was already destroyed. Fix: grab stats <em>before</em> killing the reader.
+                        </p>
+                        <p>
+                            <strong>Bug 2: Empty simulator logs.</strong> C's <code>printf</code> is fully buffered when piped to a file. The <code>timeout</code> command kills the simulator before the buffer flushes, so the log stays empty. Fix: <code>stdbuf -oL</code> forces line-buffered output.
+                        </p>
+                        <p>
+                            Both bugs have the same root cause: you're orchestrating multiple processes (reader, simulator, bpftool) with shared kernel state, and <strong>order of operations matters at the system level</strong>. This is the kind of debugging you don't encounter in application programming.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>What I Learned</h2>
+                        <h2>The Result</h2>
+                        <p>
+                            The final benchmark across 500K+ packets:
+                        </p>
+                        <pre><code>======================================================
+               eBPF LATENCY RESULTS
+======================================================
+Total Packets Processed: 500469
+Total eBPF CPU Time:     465851581 ns
+------------------------------------------------------
+Average Latency:         930 nanoseconds/packet
+======================================================</code></pre>
+                        <p>
+                            Sub-microsecond. That's parsing 5 protocol layers, filtering via hash map, and delivering to userspace via ring buffer &mdash; all within the NIC driver, before the kernel network stack sees the packet.
+                        </p>
+                        <p>
+                            A traditional <code>recv()</code> path costs 2,000-5,000 nanoseconds. We eliminated 60-80% of the operating system's overhead. To go faster than this in software, you'd need... well, you'd need hardware. FPGAs hit 50-100ns, but at orders of magnitude more development cost.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>What I Actually Learned</h2>
                         <ul class="improvement-list">
-                            <li><strong>The BPF verifier is your enemy and your friend.</strong> It rejected my program dozens of times. Every rejection forced me to think more carefully about pointer safety. The final code is provably safe &mdash; no buffer overflows, no OOB reads, guaranteed.</li>
-                            <li><strong>__always_inline is not optional.</strong> eBPF programs have a maximum instruction count. Without inlining, function calls blow the budget. Every helper function must be <code>__always_inline</code>.</li>
-                            <li><strong>Big-endian is everywhere.</strong> Network protocols are big-endian. x86 is little-endian. You will call <code>bpf_ntohs()</code> and <code>bpf_ntohl()</code> more times than you thought possible. Miss one and your prices are garbage.</li>
-                            <li><strong>Ring buffers are the right abstraction.</strong> BPF ring buffer (<code>BPF_MAP_TYPE_RINGBUF</code>) is lock-free, supports variable-size entries, and gives zero-copy access to userspace. It replaced the older perf buffer for good reason.</li>
-                            <li><strong>eBPF is the future of networking.</strong> What I built in a few weeks would have required a kernel module or FPGA five years ago. The eBPF ecosystem (libbpf, CO-RE, bpftool) has matured to the point where kernel-level packet processing is accessible to application developers.</li>
+                            <li><strong>Read the spec first.</strong> I almost started coding without understanding MoldUDP64. That would have cost me days of debugging garbled messages. Twenty minutes reading a 5-page spec saved me hours.</li>
+                            <li><strong>The verifier is your teacher, not your enemy.</strong> Every rejection forced me to think about pointer safety at a level I'd never considered. Can this pointer go out of bounds? Can this loop run forever? The final code is provably safe &mdash; not just tested, <em>proven</em>.</li>
+                            <li><strong>The tutorial was non-negotiable.</strong> A week doing the XDP tutorial exercises felt slow. But when I sat down to write the actual parser, the bounds-checking pattern was automatic. I didn't fight the verifier on my main code because I'd already fought it 50 times in practice.</li>
+                            <li><strong>Endianness will haunt you.</strong> Network protocols are big-endian. x86 is little-endian. <code>bpf_ntohs()</code>, <code>bpf_ntohl()</code>, <code>be64toh()</code> &mdash; you will call these more times than you thought possible.</li>
+                            <li><strong>System-level debugging is different.</strong> The benchmark bugs weren't logic errors &mdash; they were <em>orchestration</em> errors. Process lifecycle, buffer flushing, kernel state &mdash; you're debugging the system, not the code.</li>
                         </ul>
                     </div>
 
                     <div class="project-section">
                         <h2>Is This Production-Ready?</h2>
                         <p>
-                            No. A production feed handler needs per-packet tail latency profiling (not just averages), gap detection for dropped sequences, TCP retransmission handling for SOUP-TCP feeds, and integration with a risk system. The order book uses <code>std::map</code> which allocates &mdash; a real HFT book uses flat arrays indexed by price tick.
-                        </p>
-                        <p>
-                            But the architecture is sound. eBPF/XDP for parsing and filtering, ring buffer for delivery, C++ for the book. This is the same pattern that Cloudflare uses for DDoS mitigation and Meta uses for load balancing. Applied to market data, it's a viable software alternative to FPGA-based feed handlers &mdash; at a fraction of the development cost and with far better debuggability.
+                            No. A production feed handler needs per-packet tail latency profiling, gap detection for dropped sequences, TCP retransmission for SOUP-TCP feeds, and the order book should use flat arrays indexed by price tick instead of <code>std::map</code>. But the architecture is sound &mdash; the same pattern Cloudflare uses for DDoS mitigation and Meta uses for load balancing, applied to market data.
                         </p>
                     </div>
 
