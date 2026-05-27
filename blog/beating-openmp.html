@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="description" content="How I Beat OpenMP with a Custom Work-Stealing Scheduler - Building TopoSteal.">
+    <meta name="description" content="How I Beat OpenMP with a Custom Work-Stealing Scheduler - The real story of building TopoSteal.">
     <meta name="theme-color" content="#0a0a0b">
     <title>How I Beat OpenMP | Anand Patel</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -49,7 +49,7 @@
             <div class="project-meta">
                 <span><i class="fas fa-calendar"></i> May 2026</span>
                 <span><i class="fas fa-tag"></i> HPC, NUMA, Systems</span>
-                <span><i class="fas fa-clock"></i> 12 min read</span>
+                <span><i class="fas fa-clock"></i> 15 min read</span>
             </div>
         </div>
     </section>
@@ -90,92 +90,163 @@
 
                 <main class="project-main">
                     <div class="project-section">
-                        <h2>The Problem with Uniform Stealing</h2>
+                        <h2>The Starting Point: A Bare-Metal Work-Stealing Deque</h2>
                         <p>
-                            Every major parallel runtime &mdash; Intel TBB, Cilk, Go's goroutine scheduler &mdash; uses work-stealing to balance load across cores. When a worker runs out of tasks, it steals from another worker's queue. The textbook approach: pick a victim uniformly at random.
+                            I'd already built a lock-free work-stealing thread pool for a bare-metal Raspberry Pi 4 using the Chase-Lev deque algorithm. It worked. But it treated all cores as equidistant when picking steal victims &mdash; random selection, no topology awareness.
                         </p>
                         <p>
-                            On a single-socket machine, this is fine. Every core is roughly equidistant from every other core. But on a dual-socket Xeon with NUMA (Non-Uniform Memory Access), "equidistant" is a lie. Accessing memory on the local socket costs ~80ns. Crossing to the remote socket costs ~140ns. That's a 1.75x penalty on every cache miss.
-                        </p>
-                        <p>
-                            Uniform random stealing doesn't know about this. It picks a remote victim 50% of the time. Half your steals pay the NUMA tax for no reason.
+                            The idea for TopoSteal came from a simple question: what if the scheduler <em>knew</em> which cores were close and which were far? On a dual-socket Xeon, accessing local DRAM costs ~80ns. Crossing to the remote socket costs ~140ns. That's a 1.75x penalty. Uniform random stealing ignores this and picks a remote victim 50% of the time.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>The Idea: Weight Victims by Topology Distance</h2>
+                        <h2>Phase 1: Building on macOS, Targeting Linux</h2>
                         <p>
-                            The fix is conceptually simple: instead of picking victims uniformly, bias toward nearby cores. Use <code>hwloc</code> to discover the actual CPU topology at runtime &mdash; which cores share an L2 cache, which share an L3, which are across the NUMA boundary &mdash; and build a distance matrix. Then convert distances to steal probabilities.
+                            I started development on my Mac. macOS can't do <code>perf_event_open</code> or <code>pthread_setaffinity_np</code>, so I built a mock topology system &mdash; fake distance matrices that simulated a 2-socket NUMA system. The mock let me develop and stress-test the core logic (deques, weighted victim selection, CDF sampling) without access to real hardware.
                         </p>
                         <p>
-                            I chose inverse-square weighting: w<sub>ij</sub> = 1/d<sub>ij</sub>&sup2;. On our test system (distances 4 for same-socket, 10 for cross-socket), this gives an 86% probability of picking a same-socket victim. The math works out cleanly and the preference is aggressive enough to matter without starving remote cores entirely.
+                            Then my Linux PC fried itself. So I stayed on macOS longer than planned, building the full library with mock topology while waiting for access to the CHPC Lengau cluster in South Africa &mdash; a dual-socket Xeon E5-2690v3 with real NUMA.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>The Bug That Almost Killed the Project</h2>
+                        <h2>The hwloc Discovery Layer</h2>
                         <p>
-                            First benchmark run: zero speedup. Uniform and topology-weighted performed identically. I spent two days staring at distance matrices before finding it.
+                            On real hardware, TopoSteal uses <code>hwloc</code> to walk the CPU tree and build a pairwise distance matrix. For each pair of cores, it finds their lowest common ancestor in the topology tree:
                         </p>
+                        <ul class="improvement-list">
+                            <li>Common ancestor is an L2 cache &rarr; distance 1 (very close)</li>
+                            <li>Common ancestor is an L3 cache &rarr; distance 4 (same socket)</li>
+                            <li>Common ancestor is the machine root &rarr; distance 10 (cross-NUMA)</li>
+                        </ul>
                         <p>
-                            <strong>hwloc logical core indices are not OS CPU IDs.</strong> On our Lengau cluster, hwloc reports core L#1 but the OS knows it as CPU 2. The interleaving is: L#0&rarr;CPU0, L#1&rarr;CPU2, L#2&rarr;CPU4, etc. I was pinning workers to CPU N using <code>CPU_SET(id, ...)</code> but building the distance matrix using hwloc's logical indices. Workers thought they were on one socket but were actually on another.
+                            The hwloc integration had a critical design decision: the <code>hwloc_topology_t</code> handle is a <code>static</code> inside <code>topo.c</code>, never exposed in the header. If it lived in <code>topo.h</code>, every file that includes the header would pull in hwloc as a dependency even though they never use it. Encapsulation matters.
                         </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The 1/d&sup2; Weighting</h2>
                         <p>
-                            The fix: build a <code>cpu_map[]</code> that translates logical index to physical CPU by querying each core's processing unit OS index. Three lines of code. Instant 1.15x speedup.
+                            Given the distance matrix, steal weights are computed using inverse-square weighting: w<sub>ij</sub> = 1/d<sub>ij</sub>&sup2;. On our test system (distances 4 for same-socket, 10 for cross-socket), this gives an 86% probability of selecting a same-socket victim. I tried 1/d first &mdash; too weak. 1/d&sup2; is aggressive enough to matter.
                         </p>
-                        <pre><code class="language-c">// The fix: query hwloc for the REAL cpu id
-for (int i = 0; i &lt; t-&gt;num_cores; i++) {
-    hwloc_obj_t core = hwloc_get_obj_by_depth(hwloc_topo, depth, i);
-    hwloc_obj_t pu = hwloc_get_obj_inside_cpuset_by_type(
-        hwloc_topo, core-&gt;cpuset, HWLOC_OBJ_PU, 0);
-    t-&gt;cpu_map[i] = (pu) ? (int)pu-&gt;os_index : i;
+                        <pre><code class="language-c">// Victim selection: single pass over the CDF
+int weights_pick_victim(weights_t *w, int id, unsigned int *seed) {
+    float r = (float)rand_r(seed) / RAND_MAX;
+    for (int j = 0; j &lt; w-&gt;num_workers; j++) {
+        if (j == id) continue;
+        if (r &lt; w-&gt;steal_thresholds[id][j])
+            return j;
+    }
+    return -1;
 }</code></pre>
                     </div>
 
                     <div class="project-section">
-                        <h2>Adding PMU Feedback</h2>
+                        <h2>First Cluster Run: The cpu_map Bug</h2>
                         <p>
-                            Static topology weights are good. But what if cache pressure changes at runtime? A worker hammering DRAM is a bad steal target regardless of topology.
+                            I got access to Lengau, built the code on a compute node (which involved <code>sed</code>-fixing the Makefile every <code>git pull</code> because the cluster's hwloc was ancient and I'd built 2.9.3 from source in <code>$HOME/local</code>), and ran the first benchmark.
                         </p>
                         <p>
-                            I added a background thread that reads hardware cache miss counters via <code>perf_event_open</code> every 10ms and adjusts the effective distance: d'<sub>ij</sub> = d<sub>ij</sub> &times; (1 + miss_rate<sub>j</sub>). Workers under cache pressure become less attractive. The probability table gets rebuilt every 50ms.
+                            <strong>Result: zero speedup.</strong> Uniform and topology-weighted performed identically. I stared at distance matrices for two days.
                         </p>
                         <p>
-                            On our homogeneous pointer-chase benchmark, PMU feedback provides only marginal additional gain (all workers have similar miss rates). But it proves the full pipeline works end-to-end, and on heterogeneous workloads the dynamic adaptation would provide a larger benefit.
+                            The bug: <strong>hwloc logical core indices are not OS CPU IDs.</strong> On Lengau, the interleaving is: L#0&rarr;CPU0, L#1&rarr;CPU2, L#2&rarr;CPU4. I was pinning workers with <code>CPU_SET(id, ...)</code> but building the distance matrix using hwloc's logical indices. Workers thought they were on one socket but were physically on another.
                         </p>
-                    </div>
-
-                    <div class="project-section">
-                        <h2>Beating OpenMP on Real SpMV</h2>
+                        <pre><code class="language-c">// The fix: 3 lines that changed everything
+for (int i = 0; i &lt; t-&gt;num_cores; i++) {
+    hwloc_obj_t core = hwloc_get_obj_by_depth(topo, depth, i);
+    hwloc_obj_t pu = hwloc_get_obj_inside_cpuset_by_type(
+        topo, core-&gt;cpuset, HWLOC_OBJ_PU, 0);
+    t-&gt;cpu_map[i] = (pu) ? (int)pu-&gt;os_index : i;
+}</code></pre>
                         <p>
-                            The pointer-chase microbenchmark proved the mechanism. But I needed a real workload. SpMV (Sparse Matrix-Vector multiply) is the canonical memory-bound HPC kernel &mdash; it's in every Intel MKL benchmark suite.
-                        </p>
-                        <p>
-                            I grabbed <code>audikw_1</code> from SuiteSparse &mdash; 943K rows, 77 million nonzeros, from an Audi car body structural simulation. Loaded it in Matrix Market format, converted to CSR, and ran it through both TopoSteal and OpenMP with <code>schedule(static)</code> and <code>OMP_PROC_BIND=close</code> (Intel's recommended config).
-                        </p>
-                        <p>
-                            <strong>Result: TopoSteal 7.46 GFLOP/s, OpenMP 7.09 GFLOP/s. 5% faster.</strong>
-                        </p>
-                        <p>
-                            5% doesn't sound like much until you realize we're beating a production-quality runtime that's been optimized for decades. The reason it works: our task placement creates imbalance (all tasks start on 2 of 24 workers), requiring dynamic rebalancing. OpenMP's static scheduling can't adapt. TopoSteal's work-stealing rebalances the load while keeping 82% of steals on the same NUMA node.
+                            Three lines. <code>cpu_map[i]</code> translates logical index <em>i</em> to physical CPU <em>P<sub>n</sub></em>. Workers now pin correctly. Instant 1.15x speedup.
                         </p>
                     </div>
 
                     <div class="project-section">
-                        <h2>What I Learned</h2>
+                        <h2>The Wake-Up Call: "Wasn't PMU the Entire Point?"</h2>
+                        <p>
+                            After the first round of pointer-chase benchmarks (1.15-1.18x speedup, 85% local steals), I was writing the paper's future work section: <em>"Future work includes integration of the PMU feedback loop into the benchmark."</em>
+                        </p>
+                        <p>
+                            Wait. The PMU &mdash; the dynamic hardware counter feedback that adjusts steal probabilities at runtime based on cache miss rates &mdash; was supposed to be the paper's main contribution. I'd implemented it, but never actually <em>benchmarked</em> it. The benchmarks all used static topology weights.
+                        </p>
+                        <p>
+                            I was about to publish a paper about a PMU-driven scheduler where the PMU was never turned on.
+                        </p>
+                        <p>
+                            So I went back and wired it in properly. Three-mode evaluation: uniform random, static topology, and topology + PMU. The PMU sampler reads cache miss counters every 10ms via <code>perf_event_open</code> and rebuilds the steal probability table every 50ms using adjusted distances: d'<sub>ij</sub> = d<sub>ij</sub> &times; (1 + miss_rate<sub>j</sub>).
+                        </p>
+                        <p>
+                            On the pointer-chase benchmark, PMU feedback matched or slightly beat static weights &mdash; not a huge delta, because all workers have similar miss profiles. But the pipeline works end-to-end and on heterogeneous workloads the dynamic adaptation would provide a larger benefit.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>SpMV: Beating OpenMP on a Real Workload</h2>
+                        <p>
+                            The pointer chase proved the mechanism. But it's a microbenchmark. I needed a real workload that Intel, AMD, and NVIDIA engineers would recognize immediately.
+                        </p>
+                        <p>
+                            SpMV (Sparse Matrix-Vector multiply) is the kernel that every HPC team speaks fluently. I downloaded <code>audikw_1</code> from SuiteSparse &mdash; 943K rows, 77 million nonzeros, from an Audi car body structural mechanics simulation.
+                        </p>
+                        <p>
+                            The first SpMV attempt used <code>thermal2</code> (only 7 nnz/row) &mdash; too sparse, all modes performed identically because the working set fit in cache after the first iteration. With <code>audikw_1</code> at 82 nnz/row, each row does 82 random accesses into the x-vector, making NUMA placement critical.
+                        </p>
+                        <p>
+                            The OpenMP comparison also needed fixing. My first version created/destroyed 24 threads per repetition while OpenMP reused a thread pool. Unfair. I switched to persistent workers with <code>pthread_barrier_t</code> to match OpenMP's thread reuse.
+                        </p>
+                        <p>
+                            <strong>Final result: TopoSteal 7.46 GFLOP/s, OpenMP 7.09 GFLOP/s with <code>schedule(static)</code> + <code>OMP_PROC_BIND=close</code>. 5% faster.</strong>
+                        </p>
+                        <p>
+                            5% doesn't sound like much until you realize that's Intel's own recommended configuration for SpMV. We beat it because our task placement creates imbalance (all tasks start on 2 of 24 workers), requiring dynamic rebalancing that static partitioning can't provide &mdash; and the topology-aware stealing keeps 82% of that rebalancing on the same NUMA node.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Graph500 BFS: The Benchmark That Failed</h2>
+                        <p>
+                            I also tried Graph500 BFS with R-MAT Kronecker graphs. The idea: power-law degree distribution creates unpredictable load imbalance, perfect for work-stealing.
+                        </p>
+                        <p>
+                            <strong>Result: OpenMP <code>schedule(dynamic)</code> was 1.73x faster.</strong>
+                        </p>
+                        <p>
+                            Why? BFS is level-synchronous &mdash; you need a barrier between every level. Each level requires deque initialization, task construction, push, barrier sync, and serial edge counting. The overhead of our task infrastructure per level overwhelmed any NUMA benefit. And OpenMP's <code>schedule(dynamic)</code> IS work-stealing &mdash; we were bringing a hand-rolled scheduler to a fight against GCC's production runtime.
+                        </p>
+                        <p>
+                            I dropped BFS from the paper. Report what works AND what doesn't.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Cluster Experience</h2>
+                        <p>
+                            Working on CHPC Lengau taught me things no local development can. Every new compute node resets your GCC module (<code>module load gcc/7.3.0</code>, every time). GCC 6.1's <code>_Atomic</code> doesn't work with <code>-fopenmp</code>. The hwloc Makefile paths get overwritten by every <code>git pull</code>. <code>perf_event_paranoid=1</code> lets you read PMU counters without sudo. These aren't in any textbook &mdash; you learn them by watching things break at 2am on a PBS queue.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>What I Actually Learned</h2>
                         <ul class="improvement-list">
-                            <li><strong>Topology matters.</strong> On NUMA systems, the difference between a local and remote memory access is real and measurable. Ignoring it in your scheduler leaves performance on the table.</li>
-                            <li><strong>hwloc lies (sort of).</strong> Logical indices are not physical CPU IDs. Always build a cpu_map. This bug cost me two days.</li>
-                            <li><strong>Lock-free is hard but worth it.</strong> The Chase-Lev deque with C11 atomics took three attempts to get right. The sequential consistency fence between the bottom store and top load in <code>pop</code> is the kind of subtlety that doesn't show up in unit tests &mdash; it only fails under high contention on real hardware.</li>
-                            <li><strong>Benchmark honestly.</strong> I tried Graph500 BFS and it was 1.73x slower than OpenMP. The per-level barrier overhead dominated. I dropped it from the paper. Report what works AND what doesn't.</li>
-                            <li><strong>5% over OpenMP is real.</strong> In the memory-bandwidth world, single-digit improvements are the norm. The same techniques on a 4+ socket system with deeper NUMA hierarchies would show proportionally larger gains.</li>
+                            <li><strong>Logical != physical.</strong> hwloc core indices are NOT OS CPU IDs. Build a cpu_map or your topology-aware scheduling is scheduling-unaware. This bug gave me zero speedup for two days.</li>
+                            <li><strong>1/d vs 1/d&sup2; matters.</strong> Linear inverse distance was too weak &mdash; only 65% local steals. Inverse-square jumped to 85%. The weighting function is the tuning knob for the entire system.</li>
+                            <li><strong>Fair comparisons are hard.</strong> Thread creation/destruction overhead, barrier costs, first-touch memory placement &mdash; any of these can make your scheduler look better or worse than it actually is. I rewrote the SpMV benchmark three times before the comparison was honest.</li>
+                            <li><strong>Not every workload benefits.</strong> BFS was 1.73x slower. SpMV with sparse matrices (thermal2, 7 nnz/row) showed no difference. You need enough work per task and enough random memory access for NUMA to matter.</li>
+                            <li><strong>5% over a production runtime is real.</strong> In the memory-bandwidth world, single-digit improvements are the norm. The same techniques on 4+ socket systems with deeper NUMA hierarchies would show proportionally larger gains.</li>
+                            <li><strong>Benchmark honestly.</strong> I almost shipped a paper about PMU feedback where the PMU was never turned on. If your "main contribution" isn't in your benchmark, you don't have a contribution.</li>
                         </ul>
                     </div>
 
                     <div class="project-section">
                         <h2>What's Next</h2>
                         <p>
-                            I'm collaborating with researchers at CHPC (South Africa) and Georgia Tech to extend TopoSteal to multi-socket systems and heterogeneous CPU+GPU topologies. The goal is a submission to SC (Supercomputing Conference). If you're interested in NUMA-aware scheduling or have access to interesting hardware, <a href="mailto:patel.anand081102@gmail.com">reach out</a>.
+                            I'm working with Bryan Johnston (CHPC / Georgia Tech) to extend TopoSteal to multi-socket systems and GPU-heterogeneous topologies, targeting an SC (Supercomputing Conference) submission. The hypothesis: on 4+ socket systems where the NUMA tree is deeper and the PMU sees more variation in cache pressure across nodes, both the static weighting and dynamic feedback should show proportionally larger gains.
+                        </p>
+                        <p>
+                            The code is on <a href="https://github.com/anand1221178/TopoSteal" target="_blank">GitHub</a>. The IEEE-format paper is in the repo. If you have access to interesting multi-socket hardware and want to help test it, <a href="mailto:patel.anand081102@gmail.com">reach out</a>.
                         </p>
                     </div>
 
