@@ -182,68 +182,70 @@
             <button class="filter-btn" data-filter="hpc">HPC</button>
             <button class="filter-btn" data-filter="ml">Machine Learning</button>
             <button class="filter-btn" data-filter="systems">Systems</button>
+            <button class="filter-btn" data-filter="networking">Networking</button>
             <button class="filter-btn" data-filter="physics">Physics</button>
         </div>
 
         <div class="projects-grid">
-            <!-- Payload Drop - NEW & FEATURED -->
-            <article class="project-card featured fade-up" data-category="physics systems">
+            <!-- TopoSteal - FEATURED -->
+            <article class="project-card featured fade-up" data-category="systems hpc">
                 <div class="project-image">
-                    <img src="images/payload-drop.svg" alt="Payload Drop System" loading="lazy">
+                    <img src="images/core-image.jpg" alt="TopoSteal" loading="lazy">
                     <div class="project-overlay">
-                        <a href="projects/payload-drop.html" class="btn btn-primary">View Project</a>
+                        <a href="projects/toposteal.html" class="btn btn-primary">View Project</a>
                     </div>
                 </div>
                 <div class="project-content">
-                    <span class="project-category">Physics Simulation</span>
-                    <h3>Payload Drop System</h3>
-                    <p>A real-time 2D ballistics simulation with RK4 numerical integration, quadratic drag physics, and an intelligent binary-search targeting system. Built in C with SDL2 visualization.</p>
+                    <span class="project-category">HPC / Systems</span>
+                    <h3>TopoSteal: NUMA-Aware Work-Stealing Runtime</h3>
+                    <p>Topology-aware scheduler using hwloc + PMU feedback. 1.17x speedup, 85% local steals, beats OpenMP on SpMV (SuiteSparse audikw_1, 77M nnz).</p>
                     <div class="project-tech">
                         <span>C</span>
-                        <span>SDL2</span>
-                        <span>GSL</span>
-                        <span>RK4</span>
-                        <span>Ballistics</span>
+                        <span>hwloc</span>
+                        <span>perf_event_open</span>
+                        <span>NUMA</span>
                     </div>
                 </div>
             </article>
 
-            <!-- CUDA Ray Tracing -->
-            <article class="project-card fade-up" data-category="hpc">
+            <!-- eBPF/XDP ITCH Parser -->
+            <article class="project-card fade-up" data-category="systems networking">
                 <div class="project-image">
-                    <img src="images/raytracing.jpg" alt="CUDA Ray Tracing" loading="lazy">
+                    <img src="images/api.jpg" alt="XDP-ITCH Parser" loading="lazy">
                     <div class="project-overlay">
-                        <a href="projects/cuda-raytracing.html" class="btn btn-primary">View Project</a>
+                        <a href="projects/xdp-itch.html" class="btn btn-primary">View Project</a>
                     </div>
                 </div>
                 <div class="project-content">
-                    <span class="project-category">High Performance Computing</span>
-                    <h3>GPU-Accelerated Ray Tracer</h3>
-                    <p>Physically-based ray tracer achieving 187M rays/sec. Discovered that global memory outperforms constant memory by 29% due to latency-bound access patterns.</p>
+                    <span class="project-category">Kernel Networking / HFT</span>
+                    <h3>eBPF/XDP ITCH Market Data Parser</h3>
+                    <p>Sub-microsecond NASDAQ ITCH 5.0 parsing in the kernel via XDP. 930 ns/packet with BPF ring buffer delivery to a live C++ order book.</p>
                     <div class="project-tech">
+                        <span>C</span>
+                        <span>eBPF</span>
+                        <span>XDP</span>
                         <span>C++</span>
-                        <span>CUDA</span>
-                        <span>PBR</span>
                     </div>
                 </div>
             </article>
 
-            <!-- Work-Stealing Thread Pool -->
-            <article class="project-card fade-up" data-category="systems hpc">
+            <!-- Sentinel RTOS -->
+            <article class="project-card fade-up" data-category="systems">
                 <div class="project-image">
-                    <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool" loading="lazy">
+                    <img src="images/core-image.jpg" alt="Sentinel RTOS" loading="lazy">
                     <div class="project-overlay">
-                        <a href="projects/work-stealing.html" class="btn btn-primary">View Project</a>
+                        <a href="projects/sentinel-rtos.html" class="btn btn-primary">View Project</a>
                     </div>
                 </div>
                 <div class="project-content">
-                    <span class="project-category">Bare-Metal Systems</span>
-                    <h3>Lock-Free Work-Stealing Thread Pool</h3>
-                    <p>Chase-Lev deque implementation for bare-metal Raspberry Pi 4. Uses atomic operations and memory barriers without OS support.</p>
+                    <span class="project-category">Embedded Systems</span>
+                    <h3>Sentinel RTOS: Bare-Metal Real-Time OS</h3>
+                    <p>Preemptive RTOS from scratch on STM32F401RE. Priority inheritance, PendSV context switching in ARM assembly, 6 bare-metal drivers.</p>
                     <div class="project-tech">
-                        <span>C++</span>
-                        <span>ARM</span>
-                        <span>Lock-Free</span>
+                        <span>C</span>
+                        <span>ARM Assembly</span>
+                        <span>STM32</span>
+                        <span>Bare-Metal</span>
                     </div>
                 </div>
             </article>

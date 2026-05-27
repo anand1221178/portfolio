@@ -50,10 +50,74 @@
             <button class="filter-btn" data-filter="hpc">HPC</button>
             <button class="filter-btn" data-filter="ml">Machine Learning</button>
             <button class="filter-btn" data-filter="systems">Systems</button>
+            <button class="filter-btn" data-filter="networking">Networking</button>
             <button class="filter-btn" data-filter="physics">Physics</button>
         </div>
 
         <div class="projects-grid">
+            <!-- TopoSteal -->
+            <article class="project-card fade-up" data-category="systems hpc">
+                <div class="project-image">
+                    <img src="images/core-image.jpg" alt="TopoSteal" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/toposteal.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">HPC / Systems</span>
+                    <h3>TopoSteal: NUMA-Aware Work-Stealing Runtime</h3>
+                    <p>Topology-aware scheduler using hwloc + PMU feedback. 1.17x speedup, 85% local steals, beats OpenMP on SpMV (SuiteSparse audikw_1).</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>hwloc</span>
+                        <span>perf_event_open</span>
+                        <span>NUMA</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- eBPF/XDP ITCH Parser -->
+            <article class="project-card fade-up" data-category="systems networking">
+                <div class="project-image">
+                    <img src="images/api.jpg" alt="XDP-ITCH Parser" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/xdp-itch.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Kernel Networking / HFT</span>
+                    <h3>eBPF/XDP ITCH Market Data Parser</h3>
+                    <p>Sub-microsecond NASDAQ ITCH 5.0 parsing in the kernel via XDP. 930 ns/packet with BPF ring buffer delivery to a live order book.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>eBPF</span>
+                        <span>XDP</span>
+                        <span>C++</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Sentinel RTOS -->
+            <article class="project-card fade-up" data-category="systems">
+                <div class="project-image">
+                    <img src="images/core-image.jpg" alt="Sentinel RTOS" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="projects/sentinel-rtos.html" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Embedded Systems</span>
+                    <h3>Sentinel RTOS: Bare-Metal Real-Time OS</h3>
+                    <p>Preemptive RTOS from scratch on STM32F401RE. Priority inheritance, PendSV context switching in ARM assembly, 6 bare-metal drivers.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>ARM Assembly</span>
+                        <span>STM32</span>
+                        <span>Bare-Metal</span>
+                    </div>
+                </div>
+            </article>
+
             <!-- Payload Drop -->
             <article class="project-card fade-up" data-category="physics systems">
                 <div class="project-image">
@@ -95,25 +159,7 @@
                 </div>
             </article>
 
-            <!-- Work-Stealing Thread Pool -->
-            <article class="project-card fade-up" data-category="systems hpc">
-                <div class="project-image">
-                    <img src="images/core-image.jpg" alt="Work-Stealing Thread Pool" loading="lazy">
-                    <div class="project-overlay">
-                        <a href="projects/work-stealing.html" class="btn btn-primary">View Project</a>
-                    </div>
-                </div>
-                <div class="project-content">
-                    <span class="project-category">Bare-Metal Systems</span>
-                    <h3>Lock-Free Work-Stealing Thread Pool</h3>
-                    <p>Chase-Lev deque for bare-metal Raspberry Pi 4. Lock-free synchronization using atomic operations and memory barriers.</p>
-                    <div class="project-tech">
-                        <span>C++</span>
-                        <span>ARM</span>
-                        <span>Lock-Free</span>
-                    </div>
-                </div>
-            </article>
+            <!-- Old work-stealing replaced by TopoSteal above -->
 
             <!-- Aircraft Fault Detection -->
             <article class="project-card fade-up" data-category="ml">

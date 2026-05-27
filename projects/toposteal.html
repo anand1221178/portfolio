@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="TopoSteal: Topology-Aware Work-Stealing with PMU Feedback - NUMA-aware parallel runtime.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>TopoSteal | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>TopoSteal</span>
+            </div>
+            <h1 class="project-title">TopoSteal: Topology-Aware Work-Stealing with PMU Feedback</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2026</span>
+                <span><i class="fas fa-tag"></i> HPC, Systems Programming, NUMA</span>
+                <span><i class="fas fa-clock"></i> 10 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">C</span>
+                            <span class="tech-item">Linux</span>
+                            <span class="tech-item">hwloc</span>
+                            <span class="tech-item">perf_event_open</span>
+                            <span class="tech-item">C11 Atomics</span>
+                            <span class="tech-item">OpenMP</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Quick Stats</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">1.17x</span>
+                                <span class="stat-label">Speedup</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">85%</span>
+                                <span class="stat-label">Local Steals</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">77M</span>
+                                <span class="stat-label">SpMV nnz</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">24</span>
+                                <span class="stat-label">Cores (Dual-Socket)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="https://github.com/anand1221178/TopoSteal" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Project Overview</h2>
+                        <p>
+                            TopoSteal is a topology-aware work-stealing scheduler that discovers the CPU cache and NUMA hierarchy at runtime using hwloc and biases victim selection toward topologically close neighbours using inverse-square distance weighting (1/d&sup2;). A background thread polls hardware performance counters via Linux's perf_event_open syscall and dynamically adjusts steal probabilities based on observed cache miss rates.
+                        </p>
+                        <p>
+                            Evaluated on a dual-socket Intel Xeon E5-2690v3 (24 cores, NUMA distances 10/21) from the CHPC Lengau cluster. Achieved 1.15&ndash;1.18x speedup over uniform stealing while increasing same-socket steal locality from 50% to 85%. Outperformed OpenMP schedule(static) with OMP_PROC_BIND=close by 5% on SpMV with audikw_1 (943K rows, 77M nonzeros) from SuiteSparse.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-sitemap"></i>
+                                <h3>Topology Discovery</h3>
+                                <p>Discovers CPU cache hierarchy at runtime via hwloc and builds a pairwise distance matrix between all cores.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>PMU Feedback Loop</h3>
+                                <p>Background sampler reads hardware cache miss counters every 10ms via perf_event_open and dynamically rebuilds steal probability tables.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-retweet"></i>
+                                <h3>Lock-Free Deques</h3>
+                                <p>Chase-Lev work-stealing deques with C11 atomics and sequential consistency fences. Stress-tested with 81 million tasks, zero lost.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-microchip"></i>
+                                <h3>NUMA-Aware Stealing</h3>
+                                <p>Inverse-square distance weighting biases victim selection 85% toward same-socket cores, reducing cross-socket DRAM traffic.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Implementation</h2>
+
+                        <h3>1. Weighted Victim Selection</h3>
+                        <p>Given the distance matrix D from hwloc, steal weights are computed using inverse-square weighting: w<sub>ij</sub> = 1/d<sub>ij</sub>&sup2;. Weights are normalized per-row to form a CDF. Victim selection performs a single pass over the CDF with a uniform random sample.</p>
+                        <pre><code class="language-c">int weights_pick_victim(weights_t *w, int worker_id, unsigned int *seed) {
+    float r = (float)rand_r(seed) / RAND_MAX;
+    for (int j = 0; j &lt; w-&gt;num_workers; j++) {
+        if (j == worker_id) continue;
+        if (r &lt; w-&gt;steal_thresholds[worker_id][j])
+            return j;
+    }
+    return -1;
+}</code></pre>
+
+                        <h3>2. PMU-Driven Dynamic Feedback</h3>
+                        <p>Every 50ms, the feedback system reads per-worker cache miss rates and adjusts the effective distance: d'<sub>ij</sub> = d<sub>ij</sub> &times; (1 + normalized_miss_rate<sub>j</sub>). Workers under high cache pressure become less attractive steal targets.</p>
+                        <pre><code class="language-c">void feedback_update(feedback_t *f) {
+    for (int i = 0; i &lt; f-&gt;t-&gt;num_cores; i++) {
+        for (int j = 0; j &lt; f-&gt;t-&gt;num_cores; j++) {
+            if (i == j) continue;
+            float miss = pmu_get_miss_rate(f-&gt;p, j);
+            float effective_dist = f-&gt;t-&gt;distance[i][j] * (1.0f + miss);
+            // Rebuild steal probability from effective distance
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Results</h2>
+                        <div class="challenge-list">
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-tachometer-alt"></i> Pointer Chase Microbenchmark</h3>
+                                <p>Across 5 configurations and 50 trials, TopoSteal achieved 1.15&ndash;1.18x speedup over uniform stealing. Same-socket steal locality increased from 50% to 85%, matching the theoretical prediction from 1/d&sup2; weighting.</p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-database"></i> SpMV on SuiteSparse (audikw_1)</h3>
+                                <p>On real-world SpMV with a 77M-nonzero matrix from an Audi car body simulation, TopoSteal achieved 7.46 GFLOP/s &mdash; outperforming OpenMP schedule(static) with OMP_PROC_BIND=close by 5%. Topology-aware work-stealing surpasses production-quality static scheduling when task placement creates natural imbalance.</p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-clock"></i> Tail Latency Analysis</h3>
+                                <p>Cross-socket steals incur a 28&ndash;31% per-task latency penalty. TopoSteal reduces cross-socket steal exposure from 50% to 14%, cutting the number of tasks hitting the expensive remote DRAM path by 71%.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Conclusion</h2>
+                        <p>TopoSteal demonstrates that topology-aware victim selection yields measurable improvements on commodity NUMA hardware. The project includes a full IEEE-format technical paper and is being extended for multi-socket evaluation in collaboration with CHPC and Georgia Tech researchers, targeting submission to SC (Supercomputing Conference).</p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="cuda-raytracing.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Project
+                        </a>
+                        <a href="xdp-itch.html" class="btn btn-primary">
+                            Next Project <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>

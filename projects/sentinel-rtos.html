@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Sentinel RTOS - Bare-Metal Real-Time Operating System for STM32F401RE.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>Sentinel RTOS | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Sentinel RTOS</span>
+            </div>
+            <h1 class="project-title">Sentinel RTOS: Bare-Metal Real-Time Operating System</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2026</span>
+                <span><i class="fas fa-tag"></i> Embedded Systems, RTOS, ARM</span>
+                <span><i class="fas fa-clock"></i> 8 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">C</span>
+                            <span class="tech-item">ARM Assembly</span>
+                            <span class="tech-item">STM32F401RE</span>
+                            <span class="tech-item">Bare-Metal</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Quick Stats</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">0 HAL</span>
+                                <span class="stat-label">Pure Register Access</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">PendSV</span>
+                                <span class="stat-label">Context Switching</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">6</span>
+                                <span class="stat-label">Peripheral Drivers</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">PID</span>
+                                <span class="stat-label">Servo Control Loop</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="https://github.com/anand1221178/Sentinel-RTOS" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Project Overview</h2>
+                        <p>
+                            A fully preemptive real-time operating system built from scratch on bare metal for the STM32F401RE (ARM Cortex-M4). No HAL, no FreeRTOS, no libraries &mdash; every peripheral driver, scheduler, and synchronization primitive is implemented from first principles against the STM32 reference manual and ARM Architecture Reference Manual.
+                        </p>
+                        <p>
+                            The RTOS includes a priority-based preemptive scheduler with priority inheritance to prevent priority inversion, PendSV-driven context switching in ARM assembly, and a full suite of synchronization primitives (mutexes, semaphores, message queues). MicroBench, a custom benchmarking suite, measures context switch latency, interrupt response time, and mutex overhead, demonstrating competitive performance against FreeRTOS on identical hardware.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-tasks"></i>
+                                <h3>Preemptive Scheduler</h3>
+                                <p>Priority-based preemptive scheduler with priority inheritance protocol. PendSV-driven context switching in ARM assembly preserves full register state.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-microchip"></i>
+                                <h3>Bare-Metal Drivers</h3>
+                                <p>UART, SPI, I2C, PWM, GPIO, and ADC drivers written via direct register manipulation against STM32F401RE datasheets. Zero HAL dependency.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-lock"></i>
+                                <h3>Sync Primitives</h3>
+                                <p>Mutexes with priority inheritance, counting semaphores, and message queues. All implemented from scratch with proper interrupt-safe critical sections.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-broadcast-tower"></i>
+                                <h3>Sensor Integration</h3>
+                                <p>HC-SR04 ultrasonic and PIR motion sensors with PID-controlled servo sweep. ESP8266 WiFi telemetry with custom binary protocol for real-time radar visualization.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Implementation</h2>
+
+                        <h3>1. PendSV Context Switching</h3>
+                        <p>Context switching is triggered by the PendSV exception, the lowest-priority interrupt in ARM Cortex-M. This ensures context switches only occur when no other ISRs are active. The handler saves the current task's registers to its stack and restores the next task's registers.</p>
+                        <pre><code class="language-armasm">PendSV_Handler:
+    CPSID   I                   @ Disable interrupts
+    MRS     R0, PSP             @ Get current PSP
+    STMDB   R0!, {R4-R11}      @ Save R4-R11 to task stack
+
+    BL      scheduler_next_task @ Get next task (C function)
+
+    LDMIA   R0!, {R4-R11}      @ Restore R4-R11 from new stack
+    MSR     PSP, R0             @ Set new PSP
+    CPSIE   I                   @ Re-enable interrupts
+    BX      LR                  @ Return (hardware restores rest)</code></pre>
+
+                        <h3>2. Priority Inheritance</h3>
+                        <p>When a high-priority task blocks on a mutex held by a lower-priority task, the holder's priority is temporarily boosted to prevent priority inversion. The original priority is restored when the mutex is released.</p>
+                        <pre><code class="language-c">void mutex_lock(mutex_t *m) {
+    disable_interrupts();
+    if (m-&gt;locked &amp;&amp; m-&gt;owner != current_task) {
+        // Boost owner priority to prevent inversion
+        if (current_task-&gt;priority &gt; m-&gt;owner-&gt;priority)
+            m-&gt;owner-&gt;priority = current_task-&gt;priority;
+        // Block current task on this mutex
+        task_block(current_task, &amp;m-&gt;wait_queue);
+        schedule();
+    }
+    m-&gt;locked = 1;
+    m-&gt;owner = current_task;
+    enable_interrupts();
+}</code></pre>
+
+                        <h3>3. MicroBench: Performance Validation</h3>
+                        <p>MicroBench is a custom benchmarking suite that measures key RTOS performance metrics using the ARM DWT cycle counter for nanosecond-precision timing. Results are compared against FreeRTOS running on identical hardware.</p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Results</h2>
+                        <div class="challenge-list">
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-exchange-alt"></i> Context Switch Performance</h3>
+                                <p>MicroBench measures context switch latency, interrupt response time, and mutex acquisition overhead using the ARM DWT cycle counter. Sentinel RTOS demonstrates competitive performance against FreeRTOS on identical STM32F401RE hardware.</p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-broadcast-tower"></i> Real-World Sensor Fusion</h3>
+                                <p>Integrated HC-SR04 ultrasonic and PIR motion sensors with a PID-controlled servo sweep loop. ESP8266 WiFi module sends telemetry using a custom binary protocol to a Python ground station that renders a real-time radar display.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Conclusion</h2>
+                        <p>Sentinel RTOS demonstrates mastery of embedded systems fundamentals &mdash; ARM architecture, interrupt handling, real-time scheduling, and peripheral interfacing &mdash; all implemented without any abstraction layers. The project serves as a complete reference implementation of a preemptive RTOS suitable for resource-constrained embedded systems.</p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="xdp-itch.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Project
+                        </a>
+                        <a href="../index.html#projects" class="btn btn-primary">
+                            Back to Projects <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>

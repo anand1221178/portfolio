@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="eBPF/XDP ITCH Market Data Parser - Sub-microsecond NASDAQ feed handler.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>XDP-ITCH Parser | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#projects">Projects</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>XDP-ITCH Parser</span>
+            </div>
+            <h1 class="project-title">eBPF/XDP ITCH Market Data Parser</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> 2026</span>
+                <span><i class="fas fa-tag"></i> Kernel Networking, eBPF, HFT</span>
+                <span><i class="fas fa-clock"></i> 8 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Technologies</h3>
+                        <div class="tech-stack">
+                            <span class="tech-item">C</span>
+                            <span class="tech-item">eBPF</span>
+                            <span class="tech-item">XDP</span>
+                            <span class="tech-item">libbpf</span>
+                            <span class="tech-item">C++</span>
+                            <span class="tech-item">Linux Kernel</span>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Quick Stats</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">930 ns</span>
+                                <span class="stat-label">Per-Packet Latency</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">500K+</span>
+                                <span class="stat-label">Packets Processed</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">5</span>
+                                <span class="stat-label">Protocol Layers</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">Sub-us</span>
+                                <span class="stat-label">Kernel Fast Path</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Links</h3>
+                        <div class="project-links">
+                            <a href="https://github.com/anand1221178/ebpf-itch" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> View on GitHub
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-overview">
+                        <h2>Project Overview</h2>
+                        <p>
+                            A high-performance, kernel-bypass market data feed handler for the NASDAQ ITCH 5.0 protocol. By utilizing XDP (eXpress Data Path) and eBPF, this engine processes packets entirely within the NIC driver, bypassing the Linux kernel network stack and recv() syscall overhead to achieve sub-microsecond latency.
+                        </p>
+                        <p>
+                            Packets arrive at the NIC, the XDP hook fires the eBPF program, which parses Ethernet/IPv4/UDP/MoldUDP64/ITCH headers, filters by symbol using a BPF hash map, and pushes matched messages to a BPF ring buffer. A userspace C++ order book maintains live best bid/ask. Unmatched symbols are dropped in-kernel without ever waking userspace.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Key Features</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <i class="fas fa-layer-group"></i>
+                                <h3>Full Protocol Stack</h3>
+                                <p>Parses 5 protocol layers (Ethernet, IPv4, UDP, MoldUDP64, ITCH 5.0) entirely within the eBPF program at the XDP hook point.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-filter"></i>
+                                <h3>Symbol Filtering</h3>
+                                <p>BPF hash map-based symbol filtering drops irrelevant stocks in-kernel. Only matched messages reach userspace via zero-copy ring buffer.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-shield-alt"></i>
+                                <h3>BPF Verifier Safe</h3>
+                                <p>All pointer arithmetic includes bounds checks to pass the BPF verifier. Handles variable-length MoldUDP64 message streams with bounded loop iteration.</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-chart-bar"></i>
+                                <h3>Live Order Book</h3>
+                                <p>Price-level aggregated C++ order book with O(1) active order lookup. Handles Add, Execute, and Delete messages maintaining real-time best bid/ask.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Technical Implementation</h2>
+
+                        <h3>1. XDP Packet Processing Pipeline</h3>
+                        <p>The eBPF program uses a cursor-based parser that advances through each protocol layer with verifier-safe bounds checking at every step. Non-IPv4, non-UDP, and wrong-port packets are passed to the kernel stack. Market data packets are parsed and filtered in-kernel.</p>
+                        <pre><code class="language-c">SEC("xdp")
+int xdp_itch_parser(struct xdp_md *ctx) {
+    void *data_end = (void *)(long)ctx-&gt;data_end;
+    void *data = (void *)(long)ctx-&gt;data;
+    struct hdr_cursor nh = { .pos = data };
+
+    // Parse Ethernet -&gt; IPv4 -&gt; UDP -&gt; MoldUDP64
+    if (parse_ethhdr(&amp;nh, data_end, &amp;eth) &lt; 0) return XDP_PASS;
+    if (eth_type != bpf_htons(ETH_P_IP)) return XDP_PASS;
+    if (parse_ip4hdr(&amp;nh, data_end, &amp;iph) &lt; 0) return XDP_PASS;
+    if (ip_protocol != IPPROTO_UDP) return XDP_PASS;
+
+    // Parse ITCH messages, filter by symbol, push to ring buffer
+    for (int i = 0; i &lt; MAX_ITCH_MESSAGES; i++) {
+        // BPF hash map lookup for symbol filtering
+        // bpf_ringbuf_reserve + memcpy + submit for matches
+    }
+    return XDP_DROP; // Consumed by eBPF
+}</code></pre>
+
+                        <h3>2. BPF Ring Buffer Delivery</h3>
+                        <p>Matched ITCH messages are pushed to userspace via a BPF ring buffer &mdash; a lock-free, zero-copy mechanism. The userspace reader polls the ring buffer and feeds messages directly into the order book engine.</p>
+                        <pre><code class="language-c">// Kernel side: reserve, copy, submit
+void *ring_slot = bpf_ringbuf_reserve(&amp;itch_ringbuf,
+    sizeof(struct itch_add_order), 0);
+if (ring_slot) {
+    __builtin_memcpy(ring_slot, itch_msg,
+        sizeof(struct itch_add_order));
+    bpf_ringbuf_submit(ring_slot, 0);
+}</code></pre>
+
+                        <h3>3. Order Book Engine</h3>
+                        <p>A C++ price-level aggregated order book using std::map for price levels (sorted by price) and std::unordered_map for O(1) order lookup. Handles Add ('A'), Execute ('E'), and Delete ('D') messages, maintaining live best bid/ask spread.</p>
+                        <pre><code class="language-cpp">void OrderBook::add_order(uint64_t order_ref, char side,
+                          uint32_t price, uint32_t shares) {
+    auto&amp; level = (side == 'B') ? bids[price] : asks[price];
+    level.total_volume += shares;
+    level.order_queue.push_back({order_ref, shares});
+    // O(1) lookup stored in active_orders hash map
+}</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Results</h2>
+                        <div class="challenge-list">
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-bolt"></i> Sub-Microsecond Latency</h3>
+                                <p>Achieved 930 ns average per-packet eBPF processing latency, measured by the kernel via bpftool prog show. This is the actual CPU time spent in the XDP program per packet invocation.</p>
+                            </div>
+                            <div class="challenge-item">
+                                <h3><i class="fas fa-exchange-alt"></i> Zero-Copy Architecture</h3>
+                                <p>By processing packets at the NIC driver level and using BPF ring buffers, the entire path from wire to order book avoids kernel-to-userspace copies. Symbol filtering in-kernel means irrelevant packets never consume userspace CPU cycles.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Conclusion</h2>
+                        <p>This project demonstrates that eBPF/XDP is a viable software fast path for latency-sensitive financial infrastructure. The sub-microsecond parsing latency, combined with in-kernel symbol filtering and zero-copy delivery, provides a practical alternative to FPGA-based feed handlers at a fraction of the development complexity.</p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="toposteal.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Project
+                        </a>
+                        <a href="sentinel-rtos.html" class="btn btn-primary">
+                            Next Project <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+</body>
+</html>
