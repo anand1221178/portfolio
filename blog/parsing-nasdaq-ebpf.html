@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Parsing NASDAQ at 930ns with eBPF/XDP - Building a kernel-level market data feed handler.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>Parsing NASDAQ at 930ns | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#blog">Blog</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#blog">Blog</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#blog">Blog</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Parsing NASDAQ at 930ns</span>
+            </div>
+            <h1 class="project-title">Parsing NASDAQ at 930ns with eBPF/XDP</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> May 2026</span>
+                <span><i class="fas fa-tag"></i> eBPF, HFT, Kernel Networking</span>
+                <span><i class="fas fa-clock"></i> 10 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Project</h3>
+                        <div class="project-links">
+                            <a href="../projects/xdp-itch.html" class="project-link">
+                                <i class="fas fa-project-diagram"></i> XDP-ITCH Project Page
+                            </a>
+                            <a href="https://github.com/anand1221178/ebpf-itch" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> Source Code
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Key Numbers</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">930 ns</span>
+                                <span class="stat-label">Per Packet</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">500K+</span>
+                                <span class="stat-label">Packets</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">5</span>
+                                <span class="stat-label">Protocol Layers</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-section">
+                        <h2>The Latency Tax of recv()</h2>
+                        <p>
+                            Here's how a traditional market data feed handler works: a UDP packet arrives at the NIC, travels up through the kernel network stack (sk_buff allocation, protocol processing, socket buffer), your application calls <code>recv()</code> (syscall overhead, context switch), copies the data to userspace, then finally parses the ITCH protocol and updates the order book.
+                        </p>
+                        <p>
+                            Every step adds latency. The <code>recv()</code> syscall alone is 1-2 microseconds. Buffer copies add more. For high-frequency trading, where you're racing other firms to react to market data, every microsecond matters.
+                        </p>
+                        <p>
+                            The question I wanted to answer: what if you could parse the market data <em>before</em> it reaches userspace?
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>XDP: Processing Packets at the NIC Driver</h2>
+                        <p>
+                            XDP (eXpress Data Path) is a hook in the Linux kernel that runs an eBPF program at the earliest possible point in the network stack &mdash; right in the NIC driver, before the kernel even allocates an sk_buff. Your program gets a raw pointer to the packet data and can inspect, modify, redirect, or drop the packet.
+                        </p>
+                        <p>
+                            The catch: eBPF programs must be provably safe. The BPF verifier statically analyzes every possible execution path to ensure you never dereference an out-of-bounds pointer, never loop forever, and never access kernel memory you shouldn't. This is not a suggestion &mdash; if the verifier rejects your program, it doesn't load.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Parsing 5 Protocol Layers in eBPF</h2>
+                        <p>
+                            NASDAQ market data arrives as: <strong>Ethernet &rarr; IPv4 &rarr; UDP &rarr; MoldUDP64 &rarr; ITCH 5.0</strong>. Each layer has a variable-length header that must be parsed and bounds-checked before accessing the next.
+                        </p>
+                        <p>
+                            I used a cursor-based parser: a <code>struct hdr_cursor</code> that tracks the current position in the packet. Each parse function advances the cursor past its header and returns the next protocol type. At every step, a bounds check satisfies the verifier.
+                        </p>
+                        <pre><code class="language-c">// Each layer: bounds check, parse, advance cursor
+static __always_inline int parse_ethhdr(
+    struct hdr_cursor *nh, void *data_end,
+    struct ethhdr **ethhdr)
+{
+    struct ethhdr *eth = nh-&gt;pos;
+    if (eth + 1 &gt; data_end)      // verifier needs this
+        return -1;
+    nh-&gt;pos = eth + 1;           // advance past ethernet
+    *ethhdr = eth;
+    return eth-&gt;h_proto;         // tells us: IPv4? IPv6?
+}</code></pre>
+                        <p>
+                            The tricky part is MoldUDP64. It's NASDAQ's transport protocol that multiplexes multiple ITCH messages into a single UDP packet. Each message is prefixed with a 2-byte length field. I iterate through messages with a bounded loop (<code>MAX_ITCH_MESSAGES=64</code>) because the BPF verifier doesn't allow unbounded loops.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>In-Kernel Symbol Filtering</h2>
+                        <p>
+                            NASDAQ sends data for every listed stock. A trading firm typically only cares about a few hundred symbols. In a traditional architecture, every packet reaches userspace and gets filtered there &mdash; wasting CPU cycles on irrelevant data.
+                        </p>
+                        <p>
+                            In XDP, I use a BPF hash map populated from userspace with the <code>stock_locate</code> codes of symbols we care about. When an ITCH Add Order message is parsed, I check the hash map. If the symbol isn't tracked, the message is silently dropped &mdash; it never leaves the kernel, never wakes userspace, never consumes a ring buffer slot.
+                        </p>
+                        <pre><code class="language-c">__u16 stock_loc = bpf_ntohs(itch_msg-&gt;stock_locate);
+__u8 *track = bpf_map_lookup_elem(&amp;stock_filter, &amp;stock_loc);
+if (track &amp;&amp; *track == 1) {
+    // This stock matters - push to ring buffer
+    void *slot = bpf_ringbuf_reserve(&amp;itch_ringbuf,
+        sizeof(struct itch_add_order), 0);
+    if (slot) {
+        __builtin_memcpy(slot, itch_msg,
+            sizeof(struct itch_add_order));
+        bpf_ringbuf_submit(slot, 0);
+    }
+}
+// Else: silently dropped. Userspace never knows.</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Order Book</h2>
+                        <p>
+                            On the userspace side, a C++ order book consumes messages from the BPF ring buffer. It's a price-level aggregated book using <code>std::map</code> (sorted by price) with an <code>std::unordered_map</code> for O(1) order lookup by reference number. Handles Add, Execute, and Delete messages and maintains a live best bid/ask spread.
+                        </p>
+                        <p>
+                            The C++ book is wrapped in <code>extern "C"</code> functions so the C-based eBPF reader can call it without a C++ runtime dependency in the loader. A small detail, but the kind of thing that matters when you're mixing kernel C with userspace C++.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Result: 930 Nanoseconds</h2>
+                        <p>
+                            I measured latency using <code>bpftool prog show</code>, which reports the kernel's own measurement of total CPU time spent in the eBPF program divided by invocation count. Across 500K+ packets:
+                        </p>
+                        <p style="font-size: 1.4em; text-align: center; padding: 20px 0; color: var(--accent);">
+                            <strong>Average latency: 930 nanoseconds per packet</strong>
+                        </p>
+                        <p>
+                            That's sub-microsecond parsing of 5 protocol layers, symbol filtering via hash map lookup, and zero-copy delivery to userspace via ring buffer. All within the NIC driver, before the kernel network stack even sees the packet.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>What I Learned</h2>
+                        <ul class="improvement-list">
+                            <li><strong>The BPF verifier is your enemy and your friend.</strong> It rejected my program dozens of times. Every rejection forced me to think more carefully about pointer safety. The final code is provably safe &mdash; no buffer overflows, no OOB reads, guaranteed.</li>
+                            <li><strong>__always_inline is not optional.</strong> eBPF programs have a maximum instruction count. Without inlining, function calls blow the budget. Every helper function must be <code>__always_inline</code>.</li>
+                            <li><strong>Big-endian is everywhere.</strong> Network protocols are big-endian. x86 is little-endian. You will call <code>bpf_ntohs()</code> and <code>bpf_ntohl()</code> more times than you thought possible. Miss one and your prices are garbage.</li>
+                            <li><strong>Ring buffers are the right abstraction.</strong> BPF ring buffer (<code>BPF_MAP_TYPE_RINGBUF</code>) is lock-free, supports variable-size entries, and gives zero-copy access to userspace. It replaced the older perf buffer for good reason.</li>
+                            <li><strong>eBPF is the future of networking.</strong> What I built in a few weeks would have required a kernel module or FPGA five years ago. The eBPF ecosystem (libbpf, CO-RE, bpftool) has matured to the point where kernel-level packet processing is accessible to application developers.</li>
+                        </ul>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Is This Production-Ready?</h2>
+                        <p>
+                            No. A production feed handler needs per-packet tail latency profiling (not just averages), gap detection for dropped sequences, TCP retransmission handling for SOUP-TCP feeds, and integration with a risk system. The order book uses <code>std::map</code> which allocates &mdash; a real HFT book uses flat arrays indexed by price tick.
+                        </p>
+                        <p>
+                            But the architecture is sound. eBPF/XDP for parsing and filtering, ring buffer for delivery, C++ for the book. This is the same pattern that Cloudflare uses for DDoS mitigation and Meta uses for load balancing. Applied to market data, it's a viable software alternative to FPGA-based feed handlers &mdash; at a fraction of the development cost and with far better debuggability.
+                        </p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="beating-openmp.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Previous Post
+                        </a>
+                        <a href="../index.html#blog" class="btn btn-primary">
+                            Back to Blog <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>

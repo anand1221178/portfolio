@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="How I Beat OpenMP with a Custom Work-Stealing Scheduler - Building TopoSteal.">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>How I Beat OpenMP | Anand Patel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/project.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">Anand<span>.</span></a>
+            <div class="nav-links">
+                <a href="../index.html#about">About</a>
+                <a href="../index.html#projects">Projects</a>
+                <a href="../index.html#blog">Blog</a>
+                <a href="../index.html#contact">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="../index.html#blog">Blog</a>
+        <a href="../index.html#contact">Contact</a>
+    </div>
+
+    <section class="project-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="../index.html#blog">Blog</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Beating OpenMP</span>
+            </div>
+            <h1 class="project-title">How I Beat OpenMP with a Custom Work-Stealing Scheduler</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-calendar"></i> May 2026</span>
+                <span><i class="fas fa-tag"></i> HPC, NUMA, Systems</span>
+                <span><i class="fas fa-clock"></i> 12 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-content">
+        <div class="container">
+            <div class="content-grid">
+                <aside class="project-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Project</h3>
+                        <div class="project-links">
+                            <a href="../projects/toposteal.html" class="project-link">
+                                <i class="fas fa-project-diagram"></i> TopoSteal Project Page
+                            </a>
+                            <a href="https://github.com/anand1221178/TopoSteal" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i> Source Code
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <h3>Key Numbers</h3>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <span class="stat-value">1.17x</span>
+                                <span class="stat-label">Speedup</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">5%</span>
+                                <span class="stat-label">Over OpenMP</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">85%</span>
+                                <span class="stat-label">Local Steals</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="project-main">
+                    <div class="project-section">
+                        <h2>The Problem with Uniform Stealing</h2>
+                        <p>
+                            Every major parallel runtime &mdash; Intel TBB, Cilk, Go's goroutine scheduler &mdash; uses work-stealing to balance load across cores. When a worker runs out of tasks, it steals from another worker's queue. The textbook approach: pick a victim uniformly at random.
+                        </p>
+                        <p>
+                            On a single-socket machine, this is fine. Every core is roughly equidistant from every other core. But on a dual-socket Xeon with NUMA (Non-Uniform Memory Access), "equidistant" is a lie. Accessing memory on the local socket costs ~80ns. Crossing to the remote socket costs ~140ns. That's a 1.75x penalty on every cache miss.
+                        </p>
+                        <p>
+                            Uniform random stealing doesn't know about this. It picks a remote victim 50% of the time. Half your steals pay the NUMA tax for no reason.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Idea: Weight Victims by Topology Distance</h2>
+                        <p>
+                            The fix is conceptually simple: instead of picking victims uniformly, bias toward nearby cores. Use <code>hwloc</code> to discover the actual CPU topology at runtime &mdash; which cores share an L2 cache, which share an L3, which are across the NUMA boundary &mdash; and build a distance matrix. Then convert distances to steal probabilities.
+                        </p>
+                        <p>
+                            I chose inverse-square weighting: w<sub>ij</sub> = 1/d<sub>ij</sub>&sup2;. On our test system (distances 4 for same-socket, 10 for cross-socket), this gives an 86% probability of picking a same-socket victim. The math works out cleanly and the preference is aggressive enough to matter without starving remote cores entirely.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>The Bug That Almost Killed the Project</h2>
+                        <p>
+                            First benchmark run: zero speedup. Uniform and topology-weighted performed identically. I spent two days staring at distance matrices before finding it.
+                        </p>
+                        <p>
+                            <strong>hwloc logical core indices are not OS CPU IDs.</strong> On our Lengau cluster, hwloc reports core L#1 but the OS knows it as CPU 2. The interleaving is: L#0&rarr;CPU0, L#1&rarr;CPU2, L#2&rarr;CPU4, etc. I was pinning workers to CPU N using <code>CPU_SET(id, ...)</code> but building the distance matrix using hwloc's logical indices. Workers thought they were on one socket but were actually on another.
+                        </p>
+                        <p>
+                            The fix: build a <code>cpu_map[]</code> that translates logical index to physical CPU by querying each core's processing unit OS index. Three lines of code. Instant 1.15x speedup.
+                        </p>
+                        <pre><code class="language-c">// The fix: query hwloc for the REAL cpu id
+for (int i = 0; i &lt; t-&gt;num_cores; i++) {
+    hwloc_obj_t core = hwloc_get_obj_by_depth(hwloc_topo, depth, i);
+    hwloc_obj_t pu = hwloc_get_obj_inside_cpuset_by_type(
+        hwloc_topo, core-&gt;cpuset, HWLOC_OBJ_PU, 0);
+    t-&gt;cpu_map[i] = (pu) ? (int)pu-&gt;os_index : i;
+}</code></pre>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Adding PMU Feedback</h2>
+                        <p>
+                            Static topology weights are good. But what if cache pressure changes at runtime? A worker hammering DRAM is a bad steal target regardless of topology.
+                        </p>
+                        <p>
+                            I added a background thread that reads hardware cache miss counters via <code>perf_event_open</code> every 10ms and adjusts the effective distance: d'<sub>ij</sub> = d<sub>ij</sub> &times; (1 + miss_rate<sub>j</sub>). Workers under cache pressure become less attractive. The probability table gets rebuilt every 50ms.
+                        </p>
+                        <p>
+                            On our homogeneous pointer-chase benchmark, PMU feedback provides only marginal additional gain (all workers have similar miss rates). But it proves the full pipeline works end-to-end, and on heterogeneous workloads the dynamic adaptation would provide a larger benefit.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>Beating OpenMP on Real SpMV</h2>
+                        <p>
+                            The pointer-chase microbenchmark proved the mechanism. But I needed a real workload. SpMV (Sparse Matrix-Vector multiply) is the canonical memory-bound HPC kernel &mdash; it's in every Intel MKL benchmark suite.
+                        </p>
+                        <p>
+                            I grabbed <code>audikw_1</code> from SuiteSparse &mdash; 943K rows, 77 million nonzeros, from an Audi car body structural simulation. Loaded it in Matrix Market format, converted to CSR, and ran it through both TopoSteal and OpenMP with <code>schedule(static)</code> and <code>OMP_PROC_BIND=close</code> (Intel's recommended config).
+                        </p>
+                        <p>
+                            <strong>Result: TopoSteal 7.46 GFLOP/s, OpenMP 7.09 GFLOP/s. 5% faster.</strong>
+                        </p>
+                        <p>
+                            5% doesn't sound like much until you realize we're beating a production-quality runtime that's been optimized for decades. The reason it works: our task placement creates imbalance (all tasks start on 2 of 24 workers), requiring dynamic rebalancing. OpenMP's static scheduling can't adapt. TopoSteal's work-stealing rebalances the load while keeping 82% of steals on the same NUMA node.
+                        </p>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>What I Learned</h2>
+                        <ul class="improvement-list">
+                            <li><strong>Topology matters.</strong> On NUMA systems, the difference between a local and remote memory access is real and measurable. Ignoring it in your scheduler leaves performance on the table.</li>
+                            <li><strong>hwloc lies (sort of).</strong> Logical indices are not physical CPU IDs. Always build a cpu_map. This bug cost me two days.</li>
+                            <li><strong>Lock-free is hard but worth it.</strong> The Chase-Lev deque with C11 atomics took three attempts to get right. The sequential consistency fence between the bottom store and top load in <code>pop</code> is the kind of subtlety that doesn't show up in unit tests &mdash; it only fails under high contention on real hardware.</li>
+                            <li><strong>Benchmark honestly.</strong> I tried Graph500 BFS and it was 1.73x slower than OpenMP. The per-level barrier overhead dominated. I dropped it from the paper. Report what works AND what doesn't.</li>
+                            <li><strong>5% over OpenMP is real.</strong> In the memory-bandwidth world, single-digit improvements are the norm. The same techniques on a 4+ socket system with deeper NUMA hierarchies would show proportionally larger gains.</li>
+                        </ul>
+                    </div>
+
+                    <div class="project-section">
+                        <h2>What's Next</h2>
+                        <p>
+                            I'm collaborating with researchers at CHPC (South Africa) and Georgia Tech to extend TopoSteal to multi-socket systems and heterogeneous CPU+GPU topologies. The goal is a submission to SC (Supercomputing Conference). If you're interested in NUMA-aware scheduling or have access to interesting hardware, <a href="mailto:patel.anand081102@gmail.com">reach out</a>.
+                        </p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="../index.html#blog" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Blog
+                        </a>
+                        <a href="parsing-nasdaq-ebpf.html" class="btn btn-primary">
+                            Next Post <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>&copy; 2025 Anand Patel. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://github.com/anand1221178" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/anand-patel1221" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:anandpatel1221178@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>

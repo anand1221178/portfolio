@@ -20,6 +20,7 @@
             <div class="nav-links">
                 <a href="#about">About</a>
                 <a href="#projects">Projects</a>
+                <a href="#blog">Blog</a>
                 <a href="#contact">Contact</a>
             </div>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
@@ -34,6 +35,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <a href="#about">About</a>
         <a href="#projects">Projects</a>
+        <a href="#blog">Blog</a>
         <a href="#contact">Contact</a>
     </div>
 
@@ -190,7 +192,7 @@
             <!-- TopoSteal - FEATURED -->
             <article class="project-card featured fade-up" data-category="systems hpc">
                 <div class="project-image">
-                    <img src="images/core-image.jpg" alt="TopoSteal" loading="lazy">
+                    <img src="images/numa.png" alt="TopoSteal" loading="lazy">
                     <div class="project-overlay">
                         <a href="projects/toposteal.html" class="btn btn-primary">View Project</a>
                     </div>
@@ -211,7 +213,7 @@
             <!-- eBPF/XDP ITCH Parser -->
             <article class="project-card fade-up" data-category="systems networking">
                 <div class="project-image">
-                    <img src="images/api.jpg" alt="XDP-ITCH Parser" loading="lazy">
+                    <img src="images/XDP.webp" alt="XDP-ITCH Parser" loading="lazy">
                     <div class="project-overlay">
                         <a href="projects/xdp-itch.html" class="btn btn-primary">View Project</a>
                     </div>
@@ -232,7 +234,7 @@
             <!-- Sentinel RTOS -->
             <article class="project-card fade-up" data-category="systems">
                 <div class="project-image">
-                    <img src="images/core-image.jpg" alt="Sentinel RTOS" loading="lazy">
+                    <img src="images/rtos.png" alt="Sentinel RTOS" loading="lazy">
                     <div class="project-overlay">
                         <a href="projects/sentinel-rtos.html" class="btn btn-primary">View Project</a>
                     </div>
@@ -377,6 +379,56 @@
                 <i class="fas fa-th-large"></i>
                 View All Projects
             </a>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="projects" id="blog" style="padding-top: 80px;">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Technical <span>Writing</span></h2>
+                <p class="section-subtitle">Deep dives into the systems I build.</p>
+            </div>
+        </div>
+
+        <div class="projects-grid">
+            <article class="project-card fade-up" data-category="systems hpc">
+                <div class="project-image">
+                    <img src="images/numa.png" alt="TopoSteal Blog Post" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="blog/beating-openmp.html" class="btn btn-primary">Read Post</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Systems / HPC</span>
+                    <h3>How I Beat OpenMP with a Custom Work-Stealing Scheduler</h3>
+                    <p>Building a NUMA-aware scheduler from scratch, discovering the cpu_map bug, and why 1/d^2 weighting matters on dual-socket Xeons.</p>
+                    <div class="project-tech">
+                        <span>C</span>
+                        <span>NUMA</span>
+                        <span>hwloc</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card fade-up" data-category="systems networking">
+                <div class="project-image">
+                    <img src="images/XDP.webp" alt="XDP-ITCH Blog Post" loading="lazy">
+                    <div class="project-overlay">
+                        <a href="blog/parsing-nasdaq-ebpf.html" class="btn btn-primary">Read Post</a>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <span class="project-category">Kernel Networking / HFT</span>
+                    <h3>Parsing NASDAQ at 930ns with eBPF/XDP</h3>
+                    <p>Why I moved market data parsing into the kernel, how the BPF verifier nearly broke me, and what 930 nanoseconds actually means.</p>
+                    <div class="project-tech">
+                        <span>eBPF</span>
+                        <span>XDP</span>
+                        <span>ITCH 5.0</span>
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 
